@@ -43,8 +43,6 @@ To generate a roadmap, prepare your roadmap data in a YAML file and use the main
 
 ```python main.py yaml examples/your_roadmap.yaml```
 
-###ASCII Output Example
-
 Here's an example of an ASCII-rendered roadmap:
 
 ### Generating DrawIO Files (To Do)
