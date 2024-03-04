@@ -1,0 +1,53 @@
+name: Technology Strategy
+swimlane_column_title: CAPABILITY FOCUS
+swimlanes:
+  - name: Build Once Architecture
+    events:
+      - name: React Native
+        date: 2024-03-31
+        type: UNFUNDED
+      - name: DAF Session Cache
+        date: 2024-09-30
+        type: TARGET
+      - name: DAF Native
+        date: 2024-01-01
+        type: COMPLETED
+      - name: DAF Journey
+        date: 2024-06-01
+        type: COMPLETED
+      - name: Selective Native Framework
+        date: 2025-12-01
+        type: TARGET
+  - name: Authentication
+    events:
+      - name: SAML Platform Selection
+        date: 2024-02-01
+        type: COMPLETED
+      - name: Device Authentication
+        date: 2025-07-01
+        type: TARGET
+      # Add more events as needed
+
+  - name: Profiles
+    events:
+      - name: Core Profiles - Role model
+        date: 2025-03-01
+        type: TARGET
+      # Add more events as needed
+
+  - name: Authorisation
+    events:
+      - name: RBAC
+        date: 2026-04-01
+        type: TARGET
+      - name: Policy-based POC
+        date: 2026-08-01
+        type: DECISION
+      # Add more events as needed
+
+  - name: Search
+    events:
+      - name: SBAQ Search
+        date: 2025-05-01
+        type: RETIREMENT
+

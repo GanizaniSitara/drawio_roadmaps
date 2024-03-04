@@ -1,0 +1,20 @@
+name: Strategic Roadmap
+swimlane_column_title: SWIMLANES
+swimlanes:
+  - name: Swimlane 1
+    events:
+      - name: Unfunded Milestone
+        date: 2024-06-30
+        type: UNFUNDED
+      - name: Target Milestone
+        date: 2024-12-31
+        type: TARGET
+      - name: Completed Milestone
+        date: 2025-06-30
+        type: COMPLETED
+      - name: Retirement Milestone
+        date: 2025-12-31
+        type: RETIREMENT
+      - name: Decision Milestone
+        date: 2026-06-30
+        type: DECISION
