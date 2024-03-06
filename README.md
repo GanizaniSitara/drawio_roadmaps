@@ -36,24 +36,32 @@ source venv/bin/activate  # On Windows use `venv\Scripts\activate`
 pip install -r requirements.txt
 ```
 
-
 ### Usage
 
 To generate a roadmap, prepare your roadmap data in a YAML file and use the main script to load and render it:
 
-```python main.py yaml examples/your_roadmap.yaml```
+```python main.py yaml ascii examples/your_roadmap.yaml```
 
-###ASCII Output Example
+### ASCII Output Example
 
 Here's an example of an ASCII-rendered roadmap:
 
-### Generating DrawIO Files (To Do)
+### Generating DrawIO Files (WIP)
 
-To generate a DrawIO-compatible XML file:
+The DrawIO renderer is currently under development and doesn't work properly yet. It is a work in progress (WIP).
 
-```python main.py drawio examples/your_roadmap.yaml```
+To generate a DrawIO-compatible XML file (once the feature is complete):
+
+```python main.py yaml drawio examples/your_roadmap.yaml```
 
 The output XML file can be imported into DrawIO for graphical editing and presentation.
+
+### Using "Inspect Drawio"
+This script and the associated example file examples\inspect.drawio, are intended to allow for quick view of what a particular style looks like in XML. First edit the .drwaio file to your liking and then output the inner XML by running
+
+```python inspect_drawio.py examples/inspect.drawio```
+
+which will give yout the pretty printed XML. You can then use this XML to tweak code an styling to your liking.
 
 ### Contributing
 

@@ -1,7 +1,7 @@
 
 from enum import Enum
 
-from drawio_roadmaps.renderers.roadmap_renderers import AsciiRoadmapRenderer, DrawIORoadmapRenderer
+from drawio_roadmaps.renderers.roadmap_renderer import AsciiRoadmapRenderer, DrawIORoadmapRenderer
 from drawio_roadmaps.renderers.swimlane_renderer import AsciiSwimlaneRenderer, DrawIOSwimlaneRenderer
 from drawio_roadmaps.renderers.event_renderer import AsciiEventRenderer, DrawIOEventRenderer
 
@@ -10,20 +10,25 @@ class RendererType(Enum):
     DRAWIO = "drawio"
 
 class RendererManager:
-    def __init__(self):
-        self.renderer_type = RendererType.ASCII  # Default type
-        self.renderers = {
-            RendererType.ASCII: {
-                "roadmap": AsciiRoadmapRenderer,
-                "swimlane": AsciiSwimlaneRenderer,
-                "event": AsciiEventRenderer,
-            },
-            RendererType.DRAWIO: {
-                "roadmap": DrawIORoadmapRenderer,
-                "swimlane": DrawIOSwimlaneRenderer,
-                "event": DrawIOEventRenderer,
-            },
-        }
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(RendererManager, cls).__new__(cls)
+            cls._instance.renderer_type = RendererType.ASCII  # Default type
+            cls._instance.renderers = {
+                RendererType.ASCII: {
+                    "roadmap": AsciiRoadmapRenderer,
+                    "swimlane": AsciiSwimlaneRenderer,
+                    "event": AsciiEventRenderer,
+                },
+                RendererType.DRAWIO: {
+                    "roadmap": DrawIORoadmapRenderer,
+                    "swimlane": DrawIOSwimlaneRenderer,
+                    "event": DrawIOEventRenderer,
+                },
+            }
+        return cls._instance
 
     def set_renderer_type(self, renderer_type):
         if renderer_type not in self.renderers:
@@ -31,4 +36,5 @@ class RendererManager:
         self.renderer_type = renderer_type
 
     def get_renderer(self, component_type):
-        return self.renderers[self.renderer_type][component_type]()
+        renderer_class = self.renderers[self.renderer_type].get(component_type)
+        return renderer_class()

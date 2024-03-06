@@ -7,7 +7,6 @@ renderer_manager = RendererManager()
 class Roadmap:
     def __init__(self, name, start_year=2024, years=4, last_year_runout=False):
         self.name = name
-        self.renderer = renderer_manager.get_renderer("roadmap")
 
         self.segment_width = RoadmapConfig.Text.segment_width
 
@@ -51,6 +50,7 @@ class Roadmap:
         self.renderer = renderer
 
     def render(self):
+        self.renderer = renderer_manager.get_renderer("roadmap")
         return self.renderer.render(self)
 
 

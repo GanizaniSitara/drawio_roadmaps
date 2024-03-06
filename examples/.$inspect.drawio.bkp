@@ -1,0 +1,13 @@
+<mxfile host="Electron" modified="2024-02-05T17:39:32.478Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.7.5 Chrome/114.0.5735.289 Electron/25.8.1 Safari/537.36" etag="LrtPzcOSRWuvtQAnQElw" version="21.7.5" type="device">
+  <diagram name="Page-1" id="5IFj5sms5ILJR-mnW-l9">
+    <mxGraphModel dx="1418" dy="948" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="DybWqe_7dnbS49zcs8ZL-1" value="IT Collateral Optimization" style=";whiteSpace=wrap;html=1;fontFamily=Helvetica;fontSize=24;fontColor=#333333;strokeColor=none;fillColor=#D6D6D6;verticalAlign=top;spacing=0;fontStyle=3;align=left;spacingLeft=10;spacingTop=3;" parent="1" vertex="1">
+          <mxGeometry width="560" height="680" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

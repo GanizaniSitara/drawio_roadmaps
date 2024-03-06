@@ -4,10 +4,11 @@ import yaml
 from drawio_roadmaps.classes.event import Event
 from drawio_roadmaps.classes.swimlane import Swimlane
 from drawio_roadmaps.classes.roadmap import Roadmap
-from drawio_roadmaps.renderers.roadmap_renderers import AsciiRoadmapRenderer
+from drawio_roadmaps.renderers.roadmap_renderer import AsciiRoadmapRenderer
 from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
-from drawio_roadmaps.renderer_manager import RendererManager
+from drawio_roadmaps.renderer_manager import RendererManager, RendererType
+
 
 class RoadmapLoader:
     def load(self):
@@ -72,22 +73,28 @@ class RoadmapLoaderFactory:
             raise ValueError(f"Unknown source type: {source_type}")
 
 def main():
-    if len(sys.argv) < 3:
-        print("Usage: python main.py <source_type> <source_path>")
+    if len(sys.argv) < 4:
+        print("Usage: python main.py <source_type> <renderer_type> <source_path>")
         return
 
     source_type = sys.argv[1]
-    source_path = sys.argv[2]
+    renderer_type = sys.argv[2]
+    source_path = sys.argv[3]
 
     loader = RoadmapLoaderFactory.get_loader(source_type)
     roadmap = loader.load(source_path)
 
-    renderer_manager = RendererManager() # just use default for now
-    #renderer_manager.set_renderer_type(RendererType.ASCII)
+    renderer_manager = RendererManager()
 
-    # Do something with the loaded roadmap, e.g., render it
+    if renderer_type.lower() == "ascii":
+        renderer_manager.set_renderer_type(RendererType.ASCII)
+    elif renderer_type.lower() == "drawio":
+        renderer_manager.set_renderer_type(RendererType.DRAWIO)
+    else:
+        print(f"Invalid renderer type: {renderer_type}")
+        return
+
     print(roadmap.render())
-
 
 if __name__ == "__main__":
     main()
