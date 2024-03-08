@@ -253,7 +253,7 @@ class DrawIORoadmapRenderer:
 
             timeline = create_line(layer_id(root, 'Default'), xy_timeline_begin[0], xy_timeline_begin[1],
                                    xy_timeline_end[0], xy_timeline_end[1], 2, 2,
-                                   style='strokeColor=#FF9933')
+                                   style='strokeColor=#FF9933;strokeWidth=5;endArrow=doubleBlock;')
             root.append(timeline)
 
             for index, event in enumerate(swimlane.events):

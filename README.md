@@ -5,17 +5,20 @@ Generate consistently looking architecture roadmap views from data.
 #### Renderers
 
 - ASCII
-- Drawio (To Do)
+- Drawio 
+- PowerPoitn (To Do)
 
 #### Loaders
 
 - YAML
-- CSV (To Do)
+- CSV 
 - Database (To Do)
 
 This project allows users to create and visualize roadmaps in various formats, including ASCII and DrawIO, making it easier to plan and communicate project timelines and milestones.
 
 ![ASCII Example](examples/drawio_roadmaps_ascii_output_example.png)
+
+![DRAWIO Example](examples/drawio_roadmaps_drawio_output_example.png)
 
 ## Features
 
@@ -38,20 +41,25 @@ pip install -r requirements.txt
 
 ### Usage
 
-To generate a roadmap, prepare your roadmap data in a YAML file and use the main script to load and render it:
+To generate a roadmap, prepare your roadmap data and use the follwing command syntax:
 
-```python main.py yaml ascii examples/your_roadmap.yaml```
+```python main.py <source_type> <renderer_type> <source_path>```
 
 
-### Generating DrawIO Files (WIP)
-
-The DrawIO renderer is currently under development and doesn't work properly yet. It is a work in progress (WIP).
-
-To generate a DrawIO-compatible XML file (once the feature is complete):
-
-```python main.py yaml drawio examples/your_roadmap.yaml```
-
+# Generating Roadmaps from YAML Files
+```
+python main.py yaml ascii examples/roadmap.yaml
+python main.py yaml drawio examples/roadmap.yaml
+WIP do not use - python main.py yaml powerpoint examples/roadmap.yaml
+```
 The output XML file can be imported into DrawIO for graphical editing and presentation.
+
+# Generating Roadmaps from CSV Files
+```
+python main.py csv ascii examples/roadmap.csv
+python main.py csv drawio examples/roadmap.csv
+WIP do not use - python main.py csv powerpoint examples/roadmap.csv
+```
 
 ### Using "Inspect Drawio"
 This script and the associated example file examples\inspect.drawio, are intended to allow for quick view of what a particular style looks like in XML. First edit the .drwaio file to your liking and then output the inner XML by running

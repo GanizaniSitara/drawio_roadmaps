@@ -1,0 +1,13 @@
+roadmap_name,swimlane_column_title,swimlane_name,swimlane_type,event_name,event_date,event_type
+Enterprise Architecture Roadmap,FOCUS AREA,Cloud Migration,,Cloud Migration,2024-06-30,TARGET
+Enterprise Architecture Roadmap,FOCUS AREA,Cloud Migration,,Hybrid Cloud,2025-03-31,DECISION
+Enterprise Architecture Roadmap,FOCUS AREA,Data Governance,,Data Governance,2024-09-30,COMPLETED
+Enterprise Architecture Roadmap,FOCUS AREA,Data Governance,,Implement Master Data Management,2026-12-31,TARGET
+Enterprise Architecture Roadmap,FOCUS AREA,Microservices Architecture,,Identify Candidate Services,2024-03-31,COMPLETED
+Enterprise Architecture Roadmap,FOCUS AREA,Microservices Architecture,,Implement Service Mesh,2025-09-30,TARGET
+Enterprise Architecture Roadmap,FOCUS AREA,API Management,,API Management Platform,2024-06-30,COMPLETED
+Enterprise Architecture Roadmap,FOCUS AREA,API Management,,API Governance,2025-12-31,TARGET
+Enterprise Architecture Roadmap,FOCUS AREA,Security and Compliance,,Conduct Security Audit,2024-11-30,TARGET
+Enterprise Architecture Roadmap,FOCUS AREA,Security and Compliance,,Implement Zero Trust Architecture,2026-06-30,DECISION
+Enterprise Architecture Roadmap,FOCUS AREA,Legacy Modernization,,Assess Legacy Systems,2024-09-30,COMPLETED
+Enterprise Architecture Roadmap,FOCUS AREA,Legacy Modernization,,Legacy Applications Decomissioning,2026-06-30,UNFUNDED

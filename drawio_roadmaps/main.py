@@ -1,5 +1,7 @@
 import sys
 import yaml
+import csv
+from datetime import datetime
 
 from drawio_roadmaps.classes.event import Event
 from drawio_roadmaps.classes.swimlane import Swimlane
@@ -51,8 +53,39 @@ class YamlRoadmapLoader(RoadmapLoader):
 
 class CsvRoadmapLoader(RoadmapLoader):
     def load(self, file_path):
-        # Implement CSV loading logic
-        pass
+        try:
+            with open(file_path, 'r') as file:
+                reader = csv.DictReader(file)
+                data = list(reader)
+
+            roadmap_name = data[0]['roadmap_name']
+            swimlane_column_title = data[0]['swimlane_column_title']
+
+            roadmap = Roadmap(roadmap_name)
+            roadmap.set_swimlane_column_title(swimlane_column_title)
+
+            for row in data:
+                swimlane_name = row['swimlane_name']
+                swimlane_type = SwimlaneType[row['swimlane_type']] if row['swimlane_type'] else None
+
+                swimlane = roadmap.get_swimlane_by_name(swimlane_name)
+                if not swimlane:
+                    swimlane = Swimlane(swimlane_name)
+                    if swimlane_type:
+                        swimlane.set_swimlane_type(swimlane_type)
+                    roadmap.add_swimlane(swimlane)
+
+                event_name = row['event_name']
+                event_date = datetime.strptime(row['event_date'], '%Y-%m-%d')
+                event_type = EventType[row['event_type']] if row['event_type'] else None
+
+                event = Event(event_name, event_date, event_type)
+                swimlane.add_event(event)
+
+        except Exception as e:
+            raise LoadError(file_path, e)
+
+        return roadmap
 
 class DatabaseRoadmapLoader(RoadmapLoader):
     def load(self, connection_string):
