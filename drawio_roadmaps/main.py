@@ -90,6 +90,8 @@ def main():
         renderer_manager.set_renderer_type(RendererType.ASCII)
     elif renderer_type.lower() == "drawio":
         renderer_manager.set_renderer_type(RendererType.DRAWIO)
+    elif renderer_type.lower() == "powerpoint":
+        renderer_manager.set_renderer_type(RendererType.POWERPOINT)
     else:
         print(f"Invalid renderer type: {renderer_type}")
         return

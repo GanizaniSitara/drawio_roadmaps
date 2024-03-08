@@ -35,7 +35,7 @@ class Event:
         self.links.append(event_link)
 
     def render(self, segment_width, years):
-        renderer = renderer_manager.get_renderer()
+        renderer = renderer_manager.get_renderer('event')
         return renderer.render_event(self, segment_width, years)
 
 

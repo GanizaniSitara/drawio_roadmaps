@@ -1,8 +1,7 @@
 from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
-
-#from drawio_roadmaps.utils import drawio_tools
 from drawio_roadmaps.utils import drawio_shared_functions
+
 
 from drawio_roadmaps.config import DRAWIO_EXECUTABLE_PATH
 
@@ -152,7 +151,7 @@ class Label:
 class Rectangle:
     def __init__(self, name, x, y, width, height, **kwargs):
         self.kwargs = kwargs
-        #self.kwargs['value'] = name
+        self.kwargs['value'] = name
         self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
                                 'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;'+
                                 'strokeColor=#000000;')
@@ -203,8 +202,10 @@ class Circle:
         root.append(container)
 
 
-class DrawIORoadmapRenderer():
+class DrawIORoadmapRenderer:
+
     def render(self, roadmap):
+
         mxGraphModel = self.get_diagram_root()
         root = mxGraphModel.find("root")
         self.append_layers(root)
@@ -215,27 +216,44 @@ class DrawIORoadmapRenderer():
         swimlane_height = 100
 
         # ToDo: draw swimlanes headers
+        swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height, style='fillColor=#ffffff;strokeColor=#000000;')
+        swimlane_header.render(root)
+
+        for index, year in enumerate(years):
+            xy_cursor = (year_lenght_px * (index + 1), 0)
+            year_label = Rectangle(year,
+                                        x = xy_cursor[0],
+                                        y = xy_cursor[1],
+                                        width=year_lenght_px,
+                                        height=swimlane_height,
+                                        style='fillColor=#ffffff;strokeColor=#000000;')
+            year_label.render(root)
+
+
 
         for index, swimlane in enumerate(roadmap.swimlanes):
+            # allow for the header
             xy_cursor = (0, (index + 1) * swimlane_height)
 
 
 
-            lane = Rectangle(layer_id(root, 'Default'), xy_cursor[0] + year_lenght_px, xy_cursor[1],
-                                        year_lenght_px * (len(years) + 1),
+            lane = Rectangle('', xy_cursor[0] + year_lenght_px, xy_cursor[1],
+                                        year_lenght_px * (len(years)),
                                         swimlane_height, style='fillColor=#ffffff;strokeColor=#000000;')
             lane.render(root)
 
-            swimlane_label = Label(swimlane.name, xy_cursor[0], xy_cursor[1], year_lenght_px, swimlane_height)
+            swimlane_label = Rectangle(swimlane.name, xy_cursor[0], xy_cursor[1], year_lenght_px, swimlane_height)
             swimlane_label.render(root)
 
             xy_timeline_begin = (xy_cursor[0] + year_lenght_px + 50 # start of line magic gap
                                  , xy_cursor[1] + int(swimlane_height / 2))
 
-            xy_timeline_end = (xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years) + 1) - 50 # end of line magic gap
+            xy_timeline_end = (xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - 50 # end of line magic gap
                                , xy_cursor[1] + int(swimlane_height / 2))
 
-            timeline = create_line(layer_id(root, 'Default'), xy_timeline_begin[0], xy_timeline_begin[1], xy_timeline_end[0], xy_timeline_end[1], 2, 2, style='strokeColor=#cfcdc0;')
+            timeline = create_line(layer_id(root, 'Default'), xy_timeline_begin[0], xy_timeline_begin[1],
+                                   xy_timeline_end[0], xy_timeline_end[1], 2, 2,
+                                   style='strokeColor=#FF9933')
             root.append(timeline)
 
             for index, event in enumerate(swimlane.events):
@@ -307,4 +325,66 @@ class DrawIORoadmapRenderer():
         root.append(background)
         return mxGraphModel
 
+class PowerPointRoadmapRenderer:
+    def __init__(self):
+        self.pptx_available = False
+        self.Presentation = None
+        self.Inches = None
+        self.Pt = None
+        self.RGBColor = None
+        self.MSO_CONNECTOR = None
 
+        try:
+            from pptx import Presentation
+            from pptx.util import Inches, Pt
+            from pptx.dml.color import RGBColor
+            from pptx.enum.shapes import MSO_CONNECTOR
+
+            self.pptx_available = True
+            self.Presentation = Presentation
+            self.Inches = Inches
+            self.Pt = Pt
+            self.RGBColor = RGBColor
+            self.MSO_CONNECTOR = MSO_CONNECTOR
+        except ImportError:
+            pass
+
+    def render(self, roadmap):
+        if not self.pptx_available:
+            print("python-pptx library is not installed. Please install it to use the PowerPoint renderer.")
+            return "PowerPoint roadmap generation failed. Missing dependencies."
+
+        prs = self.Presentation()
+        slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank slide layout
+
+        # Add a text box for the title
+        title_textbox = slide.shapes.add_textbox(self.Inches(0.5), self.Inches(0.5), self.Inches(9), self.Inches(1))
+        title_textbox.text = "Roadmap"
+        title_textbox.text_frame.paragraphs[0].font.size = self.Pt(24)
+        title_textbox.text_frame.paragraphs[0].font.bold = True
+
+        year_length_px = self.Inches(2)
+        swimlane_height = self.Inches(0.5)
+        start_x = self.Inches(0.5)
+        start_y = self.Inches(1.5)
+
+        years = [str(x) for x in range(roadmap.start_year, roadmap.start_year + roadmap.years)]
+
+        for index, swimlane in enumerate(roadmap.swimlanes):
+            slide.shapes.add_textbox(start_x, start_y + index * swimlane_height, year_length_px, swimlane_height)
+            textbox = slide.shapes.add_textbox(start_x, start_y + index * swimlane_height, year_length_px, swimlane_height)
+            textbox.text = swimlane.name
+            textbox.text_frame.paragraphs[0].font.size = self.Pt(12)
+
+            timeline_start_x = start_x + year_length_px
+            timeline_end_x = timeline_start_x + year_length_px * len(years)
+            timeline_y = start_y + index * swimlane_height + swimlane_height / 2
+
+            line = slide.shapes.add_connector(self.MSO_CONNECTOR.STRAIGHT, timeline_start_x, timeline_y, timeline_end_x, timeline_y)
+            line.line.color.rgb = self.RGBColor(0, 0, 0)
+
+            for event in swimlane.events:
+                event.render(year_length_px, roadmap.years)
+
+        prs.save("roadmap.pptx")
+        return "PowerPoint roadmap generated successfully!"

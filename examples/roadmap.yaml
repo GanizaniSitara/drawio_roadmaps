@@ -4,13 +4,13 @@ swimlanes:
   - name: Build Once Architecture
     events:
       - name: React Native
-        date: 2024-03-31
+        date: 2027-03-31
         type: UNFUNDED
       - name: DAF Session Cache
         date: 2024-09-30
         type: TARGET
       - name: DAF Native
-        date: 2024-01-01
+        date: 2026-06-01
         type: COMPLETED
       - name: DAF Journey
         date: 2024-06-01
