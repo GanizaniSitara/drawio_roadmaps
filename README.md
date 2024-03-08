@@ -16,7 +16,11 @@ Generate consistently looking architecture roadmap views from data.
 
 This project allows users to create and visualize roadmaps in various formats, including ASCII and DrawIO, making it easier to plan and communicate project timelines and milestones.
 
+#### ASCII Output Example
+
 ![ASCII Example](examples/drawio_roadmaps_ascii_output_example.png)
+
+#### Drawio Output Example
 
 ![DRAWIO Example](examples/drawio_roadmaps_drawio_output_example.png)
 
