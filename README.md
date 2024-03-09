@@ -50,7 +50,7 @@ To generate a roadmap, prepare your roadmap data and use the follwing command sy
 ```python main.py <source_type> <renderer_type> <source_path>```
 
 
-# Generating Roadmaps from YAML Files
+## Generating Roadmaps from YAML Files
 ```
 python main.py yaml ascii examples/roadmap.yaml
 python main.py yaml drawio examples/roadmap.yaml
@@ -58,7 +58,7 @@ WIP do not use - python main.py yaml powerpoint examples/roadmap.yaml
 ```
 The output XML file can be imported into DrawIO for graphical editing and presentation.
 
-# Generating Roadmaps from CSV Files
+## Generating Roadmaps from CSV Files
 ```
 python main.py csv ascii examples/roadmap.csv
 python main.py csv drawio examples/roadmap.csv

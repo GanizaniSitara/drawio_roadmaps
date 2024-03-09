@@ -2,6 +2,7 @@ import sys
 import yaml
 import csv
 from datetime import datetime
+import sqlite3
 
 from drawio_roadmaps.classes.event import Event
 from drawio_roadmaps.classes.swimlane import Swimlane
@@ -89,9 +90,47 @@ class CsvRoadmapLoader(RoadmapLoader):
 
 class DatabaseRoadmapLoader(RoadmapLoader):
     def load(self, connection_string):
-        # Implement Database loading logic
-        pass
+        try:
+            conn = sqlite3.connect(connection_string)
+            cursor = conn.cursor()
 
+            # Fetch roadmap data
+            cursor.execute("SELECT * FROM roadmaps")
+            roadmap_data = cursor.fetchone()
+            roadmap = Roadmap(roadmap_data[1])
+            roadmap.set_swimlane_column_title(roadmap_data[2])
+
+            # Fetch swimlanes
+            cursor.execute("SELECT * FROM swimlanes WHERE roadmap_id = ?", (roadmap_data[0],))
+            swimlane_data = cursor.fetchall()
+            for swimlane_row in swimlane_data:
+                swimlane_id = swimlane_row[0]
+                swimlane_name = swimlane_row[2]
+                swimlane_type = SwimlaneType[swimlane_row[3]] if swimlane_row[3] else None
+
+                swimlane = roadmap.get_swimlane_by_name(swimlane_name)
+                if not swimlane:
+                    swimlane = Swimlane(swimlane_name)
+                    if swimlane_type:
+                        swimlane.set_swimlane_type(swimlane_type)
+                    roadmap.add_swimlane(swimlane)
+
+                # Fetch events for each swimlane
+                cursor.execute("SELECT * FROM events WHERE swimlane_id = ?", (swimlane_id,))
+                event_data = cursor.fetchall()
+                for event in event_data:
+                    event_name = event[2]
+                    event_date = datetime.strptime(event[3], '%Y-%m-%d')
+                    event_type = EventType[event[4]] if event[4] else None
+
+                    event_obj = Event(event_name, event_date, event_type)
+                    swimlane.add_event(event_obj)
+
+            conn.close()
+        except Exception as e:
+            raise LoadError(connection_string, e)
+
+        return roadmap
 
 class RoadmapLoaderFactory:
     @staticmethod
