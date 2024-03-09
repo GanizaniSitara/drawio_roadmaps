@@ -6,13 +6,13 @@ Generate consistently looking architecture roadmap views from data.
 
 - ASCII
 - Drawio 
-- PowerPoitn (To Do)
+- PowerPoint (To Do)
 
 #### Loaders
 
 - YAML
 - CSV 
-- Database (To Do)
+- Database
 
 This project allows users to create and visualize roadmaps in various formats, including ASCII and DrawIO, making it easier to plan and communicate project timelines and milestones.
 
@@ -64,6 +64,12 @@ python main.py csv ascii examples/roadmap.csv
 python main.py csv drawio examples/roadmap.csv
 WIP do not use - python main.py csv powerpoint examples/roadmap.csv
 ```
+
+## Generating Roadmaps from Database (SQLite)
+```
+python main.py database ascii examples/roadmap.csv
+python main.py database drawio examples/roadmap.csv
+WIP do not use - python main.py database powerpoint examples/roadmap.csv
 
 ### Using "Inspect Drawio"
 This script and the associated example file examples\inspect.drawio, are intended to allow for quick view of what a particular style looks like in XML. First edit the .drwaio file to your liking and then output the inner XML by running
