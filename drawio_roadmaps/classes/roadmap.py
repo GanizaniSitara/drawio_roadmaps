@@ -21,10 +21,10 @@ class Roadmap:
 
 
     def __str__(self, indent=0):
-        roadmap_str = ' ' * indent + f"Roadmap: {self.name}, {self.start_year}, {self.end_year}\n"
+        result = ' ' * indent + f"Roadmap: {self.name}\n"
         for swimlane in self.swimlanes:
-            roadmap_str += swimlane.__str__(indent + 4)
-        return roadmap_str
+            result += swimlane.__str__(indent + 4)
+        return result
 
     def set_swimlane_column_title(self, title):
         self.swimlane_column_title = title

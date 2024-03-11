@@ -26,7 +26,8 @@ class Event:
         return f"{market} {self.description} - {self.date.strftime('%Y-%m-%d')}"
 
     def __str__(self, indent=0):
-        return ' ' * indent + f"{self.event_type.marker} {self.description}"
+        return ' ' * indent + (f"{self.event_type.marker} {self.description} [{self.date.strftime('%Y-%m-%d')} "
+                               f"{self.event_type.render_meta.fillColor}]")
 
     def get_event_marker(self):
         return self.event_type.marker
@@ -37,5 +38,16 @@ class Event:
     def render(self, segment_width, years):
         renderer = renderer_manager.get_renderer('event')
         return renderer.render_event(self, segment_width, years)
+
+    def tubemap_station(self, root, layer, x, y, style):
+        renderer = renderer_manager.get_renderer('event')
+        renderer.render_circle(self, root, x, y, style)
+        return
+
+    def get_drawio_xml(self):
+        renderer = renderer_manager.get_renderer('event')
+        return renderer.get_drawio_xml(self)
+
+
 
 

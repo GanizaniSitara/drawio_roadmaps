@@ -16,3 +16,7 @@ class DrawIOSwimlaneRenderer(SwimlaneRenderer):
 class PowerPointSwimlaneRenderer(SwimlaneRenderer):
     def render(self, swimlane):
         return f"Swimlane Powerpoint XML: {swimlane.name}"
+
+class StringSwimlaneRenderer(SwimlaneRenderer):
+    def render(self, swimlane):
+        return f"Swimlane String: {swimlane.name}"

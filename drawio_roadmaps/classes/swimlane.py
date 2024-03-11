@@ -8,17 +8,15 @@ class Swimlane:
         self.name = name
         self.renderer = renderer_manager.get_renderer("swimlane")
 
-        self.timelines = []  # Roadmaps under this swimlane
         self.events = []  # Events under this swimlane
         self.type = swimlane_type
         self.roadmap = roadmap
 
     def __str__(self, indent=0):
-        swimlane_str = ' ' * indent + f"Swimlane: {self.name}\n"
-        for timeline in self.timelines:
-            swimlane_str += timeline.__str__(indent + 4)
+        swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{self.type.render_meta.color}]\n"
         for event in self.events:
             swimlane_str += event.__str__(indent + 4)
+        swimlane_str += '\n'
         return swimlane_str
 
     def set_renderer(self, renderer):

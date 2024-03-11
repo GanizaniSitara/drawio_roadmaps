@@ -1,11 +1,9 @@
 from lxml import etree
 import random
 import string
-from drawio_roadmaps.utils import drawio_tools
+from drawio_roadmaps.drawio import drawio_tools
 import xml.dom.minidom
 
-# id generator
-# https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits
 def id_generator(size=22, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase + '-_'):
     return ''.join(random.choice(chars) for _ in range(size))
 
@@ -40,13 +38,13 @@ def write_drawio_output(data, filename='output.drawio'):
     tree.write(filename)
 
 
-def finish(mxGraphModel, filename='output.drawio'):
+def encode_and_save_to_file(mxGraphModel, filename='output.drawio'):
     data = etree.tostring(mxGraphModel, pretty_print=False)
     data = drawio_tools.encode_diagram_data(data)
     write_drawio_output(data, filename)
 
 
-def pretty_print(mxGraphModel):
+def pretty_print_to_console(mxGraphModel):
     dom = xml.dom.minidom.parseString(etree.tostring(mxGraphModel))
     pretty_xml_as_string = dom.toprettyxml()
     print(pretty_xml_as_string)

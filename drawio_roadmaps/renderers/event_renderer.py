@@ -1,4 +1,7 @@
 
+from drawio_roadmaps.drawio.drawio_shapes import Circle
+from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
+
 class EventRenderer:
     def render_event(self, event, segment_width, years):
         raise NotImplementedError
@@ -12,11 +15,30 @@ class AsciiEventRenderer(EventRenderer):
         event_str += event_top
         return event_str
 
+class StringEventRenderer(EventRenderer):
+    def render_event(self, event):
+        event_str = f"Event: {event.description} {event.event_type} {event.render_meta.fillColor}\n"
+        return event_str
 
 class DrawIOEventRenderer(EventRenderer):
     def render_event(self, event, segment_width, years):
         # Simplified representation; actual implementation will generate XML
         return f"<event name='{event.name}' date='{event.date}'/>"
+
+    def get_drawio_xml(self, event):
+        return str(event)
+
+    def render_circle(self, event, root, x, y, style):
+        circle = Circle(event.name,
+                   layer=layer_id(root, 'Default'),
+                   x=x,
+                   y=y,
+                   width=18,
+                   height=18,
+                   style={'fillColor': event.event_type.render_meta.fillColor})
+        circle.render(root)
+        return
+
 
 class PowerPointEventRenderer(EventRenderer):
     def __init__(self):

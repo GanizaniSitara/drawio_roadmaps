@@ -1,14 +1,15 @@
 
 from enum import Enum
 
-from drawio_roadmaps.renderers.roadmap_renderer import AsciiRoadmapRenderer, DrawIORoadmapRenderer, PowerPointRoadmapRenderer
-from drawio_roadmaps.renderers.swimlane_renderer import AsciiSwimlaneRenderer, DrawIOSwimlaneRenderer, PowerPointSwimlaneRenderer
-from drawio_roadmaps.renderers.event_renderer import AsciiEventRenderer, DrawIOEventRenderer, PowerPointEventRenderer
+from drawio_roadmaps.renderers.roadmap_renderer import AsciiRoadmapRenderer, DrawIORoadmapRenderer, PowerPointRoadmapRenderer, StringRoadmapRenderer
+from drawio_roadmaps.renderers.swimlane_renderer import AsciiSwimlaneRenderer, DrawIOSwimlaneRenderer, PowerPointSwimlaneRenderer, StringSwimlaneRenderer
+from drawio_roadmaps.renderers.event_renderer import AsciiEventRenderer, DrawIOEventRenderer, PowerPointEventRenderer, StringEventRenderer
 
 class RendererType(Enum):
     ASCII = "ascii"
     DRAWIO = "drawio"
     POWERPOINT = "powerpoint"
+    STRING = "string"
 
 class RendererManager:
     _instance = None
@@ -32,6 +33,11 @@ class RendererManager:
                     "roadmap": PowerPointRoadmapRenderer,
                     "swimlane": PowerPointSwimlaneRenderer,
                     "event": PowerPointEventRenderer,
+                },
+                RendererType.STRING: {
+                    "roadmap": StringRoadmapRenderer,
+                    "swimlane": StringSwimlaneRenderer,
+                    "event": StringEventRenderer,
                 },
             }
         return cls._instance

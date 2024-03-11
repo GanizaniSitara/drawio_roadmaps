@@ -1,6 +1,8 @@
+from drawio_roadmaps.drawio.drawio_shapes import Circle
+from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
 from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
-from drawio_roadmaps.utils import drawio_shared_functions
+from drawio_roadmaps.drawio import drawio_shared_functions
 
 
 from drawio_roadmaps.config import DRAWIO_EXECUTABLE_PATH
@@ -12,6 +14,11 @@ import os
 class RoadmapRenderer:
     def render(self, roadmap):
         raise NotImplementedError
+
+
+class StringRoadmapRenderer():
+    def render(self, roadmap):
+        return str(roadmap)
 
 
 class AsciiRoadmapRenderer():
@@ -49,11 +56,6 @@ class AsciiRoadmapRenderer():
         return roadmap_str
 
 # ToDo: Move out of here to drawio objects file
-
-import string
-import random
-def id_generator(size=22, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase + '-_'):
-    return ''.join(random.choice(chars) for _ in range(size))
 
 def create_rectangle(parent, x, y, width, height, **kwargs):
     try:
@@ -107,13 +109,6 @@ def create_line(parent, x1, y1, x2, y2, width, height, **kwargs):
         RuntimeError('Error creating line')
 
 
-def layer_id(root, name):
-    for node in root.findall('.//mxCell[@parent="0"]'):
-        if node.get('value') == name:
-            return node.get('id')
-    raise RuntimeError('Layer ' + name + ' not found')
-
-
 class Label:
     def __init__(self, name, x, y, width, height, **kwargs):
         self.kwargs = kwargs
@@ -165,42 +160,6 @@ class Rectangle:
         container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         root.append(container)
 
-def create_circle(parent, x, y, width, height, **kwargs):
-    try:
-        mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
-        mxcell.set('value', kwargs.get('value', ''))
-        mxcell.set('style', kwargs.get('style', ''))
-        mxcell.set('vertex', '1')
-        mxcell.set('parent', parent)
-        mxGeometry = etree.Element('mxGeometry')
-        mxGeometry.set('x', str(x))
-        mxGeometry.set('y', str(y))
-        mxGeometry.set('width', str(width))
-        mxGeometry.set('height', str(height))
-        mxGeometry.set('as', 'geometry')
-        mxcell.append(mxGeometry)
-        return mxcell
-    except Exception as e:
-        print(e)
-        RuntimeError('Error creating circle')
-
-class Circle:
-    def __init__(self, name, x, y, width, height, **kwargs):
-        self.kwargs = kwargs
-        self.kwargs['value'] = name
-        self.kwargs['style'] = ('ellipse;whiteSpace=wrap;html=1;aspect=fixed;' +
-                                'strokeWidth=4;spacingTop=55;fontSize=10;fontFamily=Helvetica;')
-        self.x1 = x
-        self.y1 = y
-        self.width = width
-        self.height = height
-
-    def render(self, root):
-        layer = layer_id(root, 'Default')
-        container = create_circle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
-        root.append(container)
-
 
 class DrawIORoadmapRenderer:
 
@@ -229,13 +188,9 @@ class DrawIORoadmapRenderer:
                                         style='fillColor=#ffffff;strokeColor=#000000;')
             year_label.render(root)
 
-
-
         for index, swimlane in enumerate(roadmap.swimlanes):
             # allow for the header
             xy_cursor = (0, (index + 1) * swimlane_height)
-
-
 
             lane = Rectangle('', xy_cursor[0] + year_lenght_px, xy_cursor[1],
                                         year_lenght_px * (len(years)),
@@ -256,28 +211,39 @@ class DrawIORoadmapRenderer:
                                    style='strokeColor=#FF9933;strokeWidth=5;endArrow=doubleBlock;')
             root.append(timeline)
 
-            for index, event in enumerate(swimlane.events):
-                # need to calculate cursot based ont year and month relative to start of the roadmap, given standard
-                # width (year_lenght_px)
-                x_event = xy_cursor[0] + year_lenght_px + year_lenght_px * (event.date.year - roadmap.start_year) + year_lenght_px / 12 * (event.date.month - 1)
-                # ToDo: hardcoded circle height at 18 for the moment "Station Height"
-                y_event = xy_cursor[1] + int(swimlane_height / 2) - 9
-                event_label = Circle(event.name, x_event, y_event, 18, 18)
-                event_label.render(root)
+            for event in swimlane.events:
+                x = xy_cursor[0] + \
+                    year_lenght_px + \
+                    year_lenght_px * (event.date.year - roadmap.start_year) + \
+                    year_lenght_px / 12 * (event.date.month - 1)
 
+                # ToDo: hardcoded half circle height @ 9px (total size 18px)
+                # should go to config, although unlikely to change
+                # so 9 in the line below for half tube station height
 
-        drawio_shared_functions.pretty_print(mxGraphModel)
+                y = xy_cursor[1] + int(swimlane_height / 2) - 9
+                event.tubemap_station(root=root,
+                                      layer="Default",
+                                      x=x,
+                                      y=y,
+                                      style={
+                                          'fillColor': event.event_type.render_meta.fillColor
+                                      })
 
-        drawio_shared_functions.finish(mxGraphModel)
+        # "Pretty Print" to console is not really required but we like to pretty pring the XML just for comparison
+        # Encoding required for use in Confluence/Web
+        # Open desktop drawio for convenience
+
+        drawio_shared_functions.pretty_print_to_console(mxGraphModel)
+        drawio_shared_functions.encode_and_save_to_file(mxGraphModel)
         os.system(f'"{DRAWIO_EXECUTABLE_PATH}" output.drawio')
 
-        return "Success!"
+        return "DrawIO roadmap generated successfully!"
 
-
-
+    @staticmethod
     def create_layer(self, name):
         mxcell = etree.Element('mxCell')
-        mxcell.set('id', drawio_shared_functions.id_generator())
+        mxcell.set('id', id_generator())
         mxcell.set('value', name)
         mxcell.set('style', 'locked=0')
         mxcell.set('parent', '0')
@@ -285,13 +251,13 @@ class DrawIORoadmapRenderer:
 
     def append_layers(self, root):
         # back to front order, lowest layer first
-        layers = {}
-        layers['default'] = self.create_layer('Default')
+        layers = {'default': self.create_layer(self, name='Default')}
         for layer in layers.values():
             root.append(layer)
         return root
 
-    def get_diagram_root(self):
+    @staticmethod
+    def get_diagram_root():
         mxGraphModel = etree.Element('mxGraphModel')
         mxGraphModel.set('dx', '981')
         mxGraphModel.set('dy', '650')
@@ -315,7 +281,7 @@ class DrawIORoadmapRenderer:
         mxcell = etree.Element('mxCell')
         mxcell.set('id', '0')
         root.append(mxcell)
-        # backround layer is always there, we don't draw on it
+        # background layer is always there, we don't draw on it
         background = etree.Element('mxCell')
         background.set('id', '1')
         background.set('style', 'locked=1')
@@ -324,6 +290,7 @@ class DrawIORoadmapRenderer:
         background.set('value', 'Background')
         root.append(background)
         return mxGraphModel
+
 
 class PowerPointRoadmapRenderer:
     def __init__(self):
