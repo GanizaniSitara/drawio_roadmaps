@@ -1,4 +1,4 @@
-from drawio_roadmaps.classes.config import RoadmapConfig
+from drawio_roadmaps.config import RoadmapConfig as config
 from drawio_roadmaps.classes.swimlane import Swimlane
 
 from drawio_roadmaps.renderer_manager import RendererManager
@@ -8,7 +8,6 @@ class Roadmap:
     def __init__(self, name, start_year=2024, years=4, last_year_runout=False):
         self.name = name
 
-        self.segment_width = RoadmapConfig.Text.segment_width
 
         self.swimlane_column_title = "SWIMLANES"
 
@@ -48,6 +47,11 @@ class Roadmap:
 
     def set_renderer(self, renderer):
         self.renderer = renderer
+
+    def get_renderer(self):
+        if self.renderer is None:
+            raise ValueError("Renderer not set in roadmap instance. Use set_renderer() method to set the renderer.")
+        return self.renderer
 
     def render(self):
         self.renderer = renderer_manager.get_renderer("roadmap")

@@ -4,8 +4,8 @@ from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
 from drawio_roadmaps.drawio import drawio_shared_functions
 
-
 from drawio_roadmaps.config import DRAWIO_EXECUTABLE_PATH
+from drawio_roadmaps.config import RoadmapConfig as config
 
 from lxml import etree
 import os
@@ -22,38 +22,64 @@ class StringRoadmapRenderer():
 
 
 class AsciiRoadmapRenderer():
+    def __init__(self):
+        # The quarters don't line up properly so extend if showing quarter
+        # also likely to have more dense data so this is likely beneficial anyway
+        if config.Global.show_quarters:
+            self.segment_width = config.Ascii.segment_width - 1
+        else:
+            self.segment_width = config.Ascii.segment_width
+
     def render(self, roadmap):
-        pad = "#" * (roadmap.segment_width + 2) + '\n'
+        result = ""
+
+        # Draw the title and legend
+        pad = "#" * (self.segment_width + 2) + '\n'
         title = f"Roadmap: {roadmap.name}\n"
-        roadmap_str = pad + title + pad + EventType.get_legend_for_event_types() + '\n' \
-                      + SwimlaneType.get_legend_for_swimlane_types() + '\n'
+        title_and_legend = pad + title + pad + EventType.get_legend_for_event_types() + '\n' \
+                           + SwimlaneType.get_legend_for_swimlane_types() + '\n'
+        result += title_and_legend
 
-        horizontal_segment = '+' + '-' * roadmap.segment_width
+        # Draw the header
+        horizontal_segment = '+' + '-' * self.segment_width
         roadmap_delim = horizontal_segment * (roadmap.years + 1) + '+\n'
-        roadmap_str += roadmap_delim
+        result += roadmap_delim
 
-        header_segment = '| ' + ' ' * (roadmap.segment_width - 1)
+        header_segment = '| ' + ' ' * (self.segment_width - 1)
         roamap_pad = header_segment * (roadmap.years + 1) + '|\n'
-        roadmap_str += roamap_pad
+        result += roamap_pad
 
         # put columne title in first segment and pad till segment width
         roadmap_header_text = '| ' + roadmap.swimlane_column_title
-        roadmap_header_text += ' ' * (roadmap.segment_width - len(roadmap_header_text)) + ' |'
+        roadmap_header_text += ' ' * (self.segment_width - len(roadmap_header_text)) + ' |'
 
         # in second and following segments, center the text, which will be the years
         for year in range(roadmap.start_year, roadmap.end_year):
             year_str = f"{year}"
-            year_str = year_str.center(roadmap.segment_width)
+            year_str = year_str.center(self.segment_width)
             roadmap_header_text += year_str + '|'
-        roadmap_str += roadmap_header_text + '\n'
-        roadmap_str += roamap_pad
-        roadmap_str += roadmap_delim
+        result += roadmap_header_text + '\n'
+
+        if config.Global.show_quarters:
+            result += roamap_pad
+            result += '| ' + ' ' * (self.segment_width - 1) + '|'
+            # Draw the quarter markers
+            for year in range(roadmap.years):
+                for quarter in range(1, 5):
+                    quarter_marker = f"Q{quarter}"
+                    result += '   ' + quarter_marker + '   |'
+
+            result += '\n'
+        else:
+            result += roamap_pad
+        result += roadmap_delim
 
         for swimlane in roadmap.swimlanes:
-            roadmap_str += swimlane.render(segment_width=roadmap.segment_width, years=roadmap.years)
-            roadmap_str += roadmap_delim
+            result += swimlane.render(segment_width=self.segment_width, years=roadmap.years)
+            result += roadmap_delim
 
-        return roadmap_str
+        return result
+
 
 # ToDo: Move out of here to drawio objects file
 
@@ -77,6 +103,7 @@ def create_rectangle(parent, x, y, width, height, **kwargs):
     except Exception as e:
         print(e)
         RuntimeError('Error creating rectangle')
+
 
 def create_line(parent, x1, y1, x2, y2, width, height, **kwargs):
     try:
@@ -114,46 +141,48 @@ class Label:
         self.kwargs = kwargs
         self.kwargs['value'] = name
         self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;'+
+                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
                                 'labelBackgroundColor=#ffffff;')
-        self.x1=x
-        self.y1=y
-        self.width=width
-        self.height=height
+        self.x1 = x
+        self.y1 = y
+        self.width = width
+        self.height = height
 
     def render(self, root):
         layer = layer_id(root, 'Default')
         container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         root.append(container)
+
 
 class Label:
     def __init__(self, name, x, y, width, height, **kwargs):
         self.kwargs = kwargs
         self.kwargs['value'] = name
         self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;'+
+                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
                                 'labelBackgroundColor=#ffffff;')
-        self.x1=x
-        self.y1=y
-        self.width=width
-        self.height=height
+        self.x1 = x
+        self.y1 = y
+        self.width = width
+        self.height = height
 
     def render(self, root):
         layer = layer_id(root, 'Default')
         container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         root.append(container)
 
+
 class Rectangle:
     def __init__(self, name, x, y, width, height, **kwargs):
         self.kwargs = kwargs
         self.kwargs['value'] = name
         self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;'+
+                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
                                 'strokeColor=#000000;')
-        self.x1=x
-        self.y1=y
-        self.width=width
-        self.height=height
+        self.x1 = x
+        self.y1 = y
+        self.width = width
+        self.height = height
 
     def render(self, root):
         layer = layer_id(root, 'Default')
@@ -170,22 +199,24 @@ class DrawIORoadmapRenderer:
         self.append_layers(root)
 
         years = [str(x) for x in range(roadmap.start_year, roadmap.start_year + roadmap.years)]
-        year_lenght_px= 240
-        diagram_width = year_lenght_px + year_lenght_px * len(years) #start with swimlane headers equating to width of 1
+        year_lenght_px = 240
+        diagram_width = year_lenght_px + year_lenght_px * len(
+            years)  # start with swimlane headers equating to width of 1
         swimlane_height = 100
 
         # ToDo: draw swimlanes headers
-        swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height, style='fillColor=#ffffff;strokeColor=#000000;')
+        swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height,
+                                    style='fillColor=#ffffff;strokeColor=#000000;')
         swimlane_header.render(root)
 
         for index, year in enumerate(years):
             xy_cursor = (year_lenght_px * (index + 1), 0)
             year_label = Rectangle(year,
-                                        x = xy_cursor[0],
-                                        y = xy_cursor[1],
-                                        width=year_lenght_px,
-                                        height=swimlane_height,
-                                        style='fillColor=#ffffff;strokeColor=#000000;')
+                                   x=xy_cursor[0],
+                                   y=xy_cursor[1],
+                                   width=year_lenght_px,
+                                   height=swimlane_height,
+                                   style='fillColor=#ffffff;strokeColor=#000000;')
             year_label.render(root)
 
         for index, swimlane in enumerate(roadmap.swimlanes):
@@ -193,18 +224,19 @@ class DrawIORoadmapRenderer:
             xy_cursor = (0, (index + 1) * swimlane_height)
 
             lane = Rectangle('', xy_cursor[0] + year_lenght_px, xy_cursor[1],
-                                        year_lenght_px * (len(years)),
-                                        swimlane_height, style='fillColor=#ffffff;strokeColor=#000000;')
+                             year_lenght_px * (len(years)),
+                             swimlane_height, style='fillColor=#ffffff;strokeColor=#000000;')
             lane.render(root)
 
             swimlane_label = Rectangle(swimlane.name, xy_cursor[0], xy_cursor[1], year_lenght_px, swimlane_height)
             swimlane_label.render(root)
 
-            xy_timeline_begin = (xy_cursor[0] + year_lenght_px + 50 # start of line magic gap
+            xy_timeline_begin = (xy_cursor[0] + year_lenght_px + 50  # start of line magic gap
                                  , xy_cursor[1] + int(swimlane_height / 2))
 
-            xy_timeline_end = (xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - 50 # end of line magic gap
-                               , xy_cursor[1] + int(swimlane_height / 2))
+            xy_timeline_end = (
+            xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - 50  # end of line magic gap
+            , xy_cursor[1] + int(swimlane_height / 2))
 
             timeline = create_line(layer_id(root, 'Default'), xy_timeline_begin[0], xy_timeline_begin[1],
                                    xy_timeline_end[0], xy_timeline_end[1], 2, 2,
@@ -339,7 +371,8 @@ class PowerPointRoadmapRenderer:
 
         for index, swimlane in enumerate(roadmap.swimlanes):
             slide.shapes.add_textbox(start_x, start_y + index * swimlane_height, year_length_px, swimlane_height)
-            textbox = slide.shapes.add_textbox(start_x, start_y + index * swimlane_height, year_length_px, swimlane_height)
+            textbox = slide.shapes.add_textbox(start_x, start_y + index * swimlane_height, year_length_px,
+                                               swimlane_height)
             textbox.text = swimlane.name
             textbox.text_frame.paragraphs[0].font.size = self.Pt(12)
 
@@ -347,7 +380,8 @@ class PowerPointRoadmapRenderer:
             timeline_end_x = timeline_start_x + year_length_px * len(years)
             timeline_y = start_y + index * swimlane_height + swimlane_height / 2
 
-            line = slide.shapes.add_connector(self.MSO_CONNECTOR.STRAIGHT, timeline_start_x, timeline_y, timeline_end_x, timeline_y)
+            line = slide.shapes.add_connector(self.MSO_CONNECTOR.STRAIGHT, timeline_start_x, timeline_y, timeline_end_x,
+                                              timeline_y)
             line.line.color.rgb = self.RGBColor(0, 0, 0)
 
             for event in swimlane.events:

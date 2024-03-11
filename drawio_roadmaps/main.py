@@ -26,6 +26,7 @@ class LoadError(Exception):
 
 
 
+# ToDo: Loaders need sorting out and moving out to the loaders module. No need for them to sit here.
 class YamlRoadmapLoader(RoadmapLoader):
     def load(self, file_path):
         try:

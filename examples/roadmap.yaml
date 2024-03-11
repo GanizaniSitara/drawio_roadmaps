@@ -2,9 +2,10 @@ name: Technology Strategy
 swimlane_column_title: CAPABILITY FOCUS
 swimlanes:
   - name: Build Once Architecture
+    type: PLATFORM
     events:
       - name: React Native
-        date: 2027-03-31
+        date: 2026-11-30
         type: UNFUNDED
       - name: DAF Session Cache
         date: 2024-09-30
@@ -19,6 +20,7 @@ swimlanes:
         date: 2025-12-01
         type: TARGET
   - name: Authentication
+    type: INDEPENDENT
     events:
       - name: SAML Platform Selection
         date: 2024-02-01

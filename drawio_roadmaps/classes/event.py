@@ -25,9 +25,15 @@ class Event:
         market = self.event_type.marker if self.event_type else '='
         return f"{market} {self.description} - {self.date.strftime('%Y-%m-%d')}"
 
-    def __str__(self, indent=0):
-        return ' ' * indent + (f"{self.event_type.marker} {self.description} [{self.date.strftime('%Y-%m-%d')} "
-                               f"{self.event_type.render_meta.fillColor}]")
+    def __str__(self):
+        # ToDo: we should remove the marker and put output specific implemenstation in the renderers
+        return f"{self.event_type.marker} {self.description}"
+
+    def __repr__(self):
+        return f"{self.event_type.marker} {self.description} [{self.date.strftime('%Y-%m-%d')} " \
+               f"{self.event_type.render_meta.fillColor}]"
+    def to_string(self, indent=0):
+        return ' ' * indent + repr(self)
 
     def get_event_marker(self):
         return self.event_type.marker

@@ -11,6 +11,7 @@ class Swimlane:
         self.events = []  # Events under this swimlane
         self.type = swimlane_type
         self.roadmap = roadmap
+        self.roadmap_renderer = None
 
     def __str__(self, indent=0):
         swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{self.type.render_meta.color}]\n"
@@ -23,6 +24,11 @@ class Swimlane:
         self.renderer = renderer
 
     def render(self, segment_width, years):
+
+        # ToDo: Needs moving out to SwimlaneRenderer, for now only Acsii output uses this
+
+        self.roadmap_renderer = self.roadmap.get_renderer()
+
         swimlane_pad = '|' + ' ' * segment_width + '|' + ' ' * (years * (segment_width + 1) - 1) + '|\n'
 
         swimlane_str = f"| {self.name}"
@@ -46,7 +52,7 @@ class Swimlane:
 
 
             # Add spaces for the offset
-            event_str = '|' +  ' ' * self.roadmap.segment_width + '|' + ' ' * offset_segments + str(event)
+            event_str = '|' +  ' ' * self.roadmap_renderer.segment_width + '|' + ' ' * offset_segments + str(event)
             event_str += ' ' * ((segment_width + 1) * (years + 1) - len(event_str)) + '|\n'
             events_str += event_str
 
