@@ -1,4 +1,4 @@
-from drawio_roadmaps.drawio.drawio_shapes import Circle
+from drawio_roadmaps.drawio.drawio_shapes import create_line
 from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
 from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
@@ -82,7 +82,6 @@ class AsciiRoadmapRenderer():
 
 
 # ToDo: Move out of here to drawio objects file
-
 def create_rectangle(parent, x, y, width, height, **kwargs):
     try:
         mxcell = etree.Element('mxCell')
@@ -103,55 +102,6 @@ def create_rectangle(parent, x, y, width, height, **kwargs):
     except Exception as e:
         print(e)
         RuntimeError('Error creating rectangle')
-
-
-def create_line(parent, x1, y1, x2, y2, width, height, **kwargs):
-    try:
-        mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
-        if 'value' in kwargs:
-            mxcell.set('value', kwargs.get('value', ''))
-        mxcell.set('style', kwargs.get('style', ''))
-        mxcell.set('parent', parent)
-        mxcell.set('edge', '1')
-        mxGeometry = etree.Element('mxGeometry')
-        mxGeometry.set('width', str(width))
-        mxGeometry.set('height', str(height))
-        mxGeometry.set('relative', '1')
-        mxGeometry.set('as', 'geometry')
-        mxSourcePoint = etree.Element('mxPoint')
-        mxSourcePoint.set('x', str(x1))
-        mxSourcePoint.set('y', str(y1))
-        mxSourcePoint.set('as', 'sourcePoint')
-        mxGeometry.append(mxSourcePoint)
-        mxTargetPoint = etree.Element('mxPoint')
-        mxTargetPoint.set('x', str(x2))
-        mxTargetPoint.set('y', str(y2))
-        mxTargetPoint.set('as', 'targetPoint')
-        mxGeometry.append(mxTargetPoint)
-        mxcell.append(mxGeometry)
-        return mxcell
-    except Exception as e:
-        print(e)
-        RuntimeError('Error creating line')
-
-
-class Label:
-    def __init__(self, name, x, y, width, height, **kwargs):
-        self.kwargs = kwargs
-        self.kwargs['value'] = name
-        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
-                                'labelBackgroundColor=#ffffff;')
-        self.x1 = x
-        self.y1 = y
-        self.width = width
-        self.height = height
-
-    def render(self, root):
-        layer = layer_id(root, 'Default')
-        container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
-        root.append(container)
 
 
 class Label:
@@ -219,7 +169,44 @@ class DrawIORoadmapRenderer:
                                    style='fillColor=#ffffff;strokeColor=#000000;')
             year_label.render(root)
 
+        if config.Global.show_quarters:
+            # Copilot auto generated this code
+            for index, year in enumerate(years):
+                xy_cursor = (year_lenght_px * (index + 1), swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q1",
+                                         x=xy_cursor[0],
+                                         y=xy_cursor[1],
+                                         width=year_lenght_px / 4,
+                                         height=swimlane_height * 0.25,
+                                         style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 4, swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q2",
+                                         x=xy_cursor[0],
+                                         y=xy_cursor[1],
+                                         width=year_lenght_px / 4,
+                                         height=swimlane_height * 0.25,
+                                         style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 2, swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q3",
+                                         x=xy_cursor[0],
+                                         y=xy_cursor[1],
+                                         width=year_lenght_px / 4,
+                                         height=swimlane_height * 0.25,
+                                         style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px * 3 / 4, swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q4",
+                                         x=xy_cursor[0],
+                                         y=xy_cursor[1],
+                                         width=year_lenght_px / 4,
+                                         height=swimlane_height * 0.25,
+                                         style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+
         for index, swimlane in enumerate(roadmap.swimlanes):
+
             # allow for the header
             xy_cursor = (0, (index + 1) * swimlane_height)
 
@@ -238,10 +225,20 @@ class DrawIORoadmapRenderer:
             xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - 50  # end of line magic gap
             , xy_cursor[1] + int(swimlane_height / 2))
 
-            timeline = create_line(layer_id(root, 'Default'), xy_timeline_begin[0], xy_timeline_begin[1],
-                                   xy_timeline_end[0], xy_timeline_end[1], 2, 2,
-                                   style='strokeColor=#FF9933;strokeWidth=5;endArrow=doubleBlock;')
-            root.append(timeline)
+            swimlane.tubemap_line(root=root,
+                                  layer="Default",
+                                  begin_x=xy_timeline_begin[0],
+                                  begin_y=xy_timeline_begin[1],
+                                  end_x=xy_timeline_end[0],
+                                  end_y=xy_timeline_end[1],
+                                  width=2,
+                                  height=2,
+                                  style={
+                                      'strokeColor': swimlane.type.metadata_drawio.strokeColor,
+                                      'strokeWidth': '5',
+                                      'endArrow': 'doubleBlock'
+                                  })
+
 
             for event in swimlane.events:
                 x = xy_cursor[0] + \

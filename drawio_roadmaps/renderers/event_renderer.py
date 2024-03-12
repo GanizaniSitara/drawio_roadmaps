@@ -17,7 +17,7 @@ class AsciiEventRenderer(EventRenderer):
 
 class StringEventRenderer(EventRenderer):
     def render_event(self, event):
-        event_str = f"Event: {event.description} {event.event_type} {event.render_meta.fillColor}\n"
+        event_str = f"Event: {event.description} {event.event_type} {event.metadata_drawio.fillColor}\n"
         return event_str
 
 class DrawIOEventRenderer(EventRenderer):
@@ -28,14 +28,16 @@ class DrawIOEventRenderer(EventRenderer):
     def get_drawio_xml(self, event):
         return str(event)
 
-    def render_circle(self, event, root, x, y, style):
+    def render_circle(self, event, root, layer, x, y, style):
         circle = Circle(event.name,
-                   layer=layer_id(root, 'Default'),
-                   x=x,
-                   y=y,
-                   width=18,
-                   height=18,
-                   style={'fillColor': event.event_type.render_meta.fillColor})
+                        layer=layer_id(root, name=layer),
+                        x=x,
+                        y=y,
+                        width=18,
+                        height=18,
+                        style={
+                            'fillColor': event.event_type.render_meta.fillColor
+                        })
         circle.render(root)
         return
 

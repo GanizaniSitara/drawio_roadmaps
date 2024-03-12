@@ -2,17 +2,23 @@ from enum import Enum
 from dataclasses import dataclass
 
 @dataclass
-class SwimlaneRenderMeta:
-    color: str
+class SwimlaneMetadataDrawio:
+    strokeColor: str
+
+
+# TODO: Implement
+class SwimlaneMetadataAscii:
+    marker: str
+
 
 class SwimlaneType(Enum):
-    PLATFORM = ('=', "Platform", SwimlaneRenderMeta(color="#FF0000"))
-    INDEPENDENT = ('—', "Independent", SwimlaneRenderMeta(color="#0F00F0"))  # Em dash
+    PLATFORM = ('=', "Platform", SwimlaneMetadataDrawio(strokeColor="#FFA500"))
+    INDEPENDENT = ('—', "Independent", SwimlaneMetadataDrawio(strokeColor="#800080"))
 
-    def __init__(self, marker, description, render_meta):
+    def __init__(self, marker, description, metadata_drawio):
         self.marker = marker
         self.description = description
-        self.render_meta = render_meta
+        self.metadata_drawio = metadata_drawio
 
     @classmethod
     def get_legend_for_swimlane_types(cls):

@@ -76,6 +76,7 @@ class Circle:
             layer = layer_id(root, 'Default')
         container = create_circle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         self.container = container
+
     def render(self, root):
         self._generate(root)
         root.append(self.container)
@@ -83,3 +84,79 @@ class Circle:
     def append_to(self, root):
         root.append(self.container)
 
+
+def create_line(parent, x1, y1, x2, y2, width, height, **kwargs):
+    try:
+        mxcell = etree.Element('mxCell')
+        mxcell.set('id', id_generator())
+        if 'value' in kwargs:
+            mxcell.set('value', kwargs.get('value', ''))
+        mxcell.set('style', kwargs.get('style', ''))
+        mxcell.set('parent', parent)
+        mxcell.set('edge', '1')
+        mxGeometry = etree.Element('mxGeometry')
+        mxGeometry.set('width', str(width))
+        mxGeometry.set('height', str(height))
+        mxGeometry.set('relative', '1')
+        mxGeometry.set('as', 'geometry')
+        mxSourcePoint = etree.Element('mxPoint')
+        mxSourcePoint.set('x', str(x1))
+        mxSourcePoint.set('y', str(y1))
+        mxSourcePoint.set('as', 'sourcePoint')
+        mxGeometry.append(mxSourcePoint)
+        mxTargetPoint = etree.Element('mxPoint')
+        mxTargetPoint.set('x', str(x2))
+        mxTargetPoint.set('y', str(y2))
+        mxTargetPoint.set('as', 'targetPoint')
+        mxGeometry.append(mxTargetPoint)
+        mxcell.append(mxGeometry)
+        return mxcell
+    except Exception as e:
+        print(e)
+        RuntimeError('Error creating line')
+
+class Line:
+    def __init__(self, root, layer, x1, y1, x2, y2, width, height, **kwargs):
+        self.root = root
+        self.layer = layer
+        self.style =  {
+            'html': '1',
+            'rounded': '0',
+            'endFill': '1',
+        }
+        style = kwargs.get('style', {})
+        self.style.update(style)
+        self.style = '' + ';'.join(f'{key}={value}' for key, value in self.style.items()) + ';'
+        self.kwargs = {}
+        self.kwargs['style'] = self.style
+        # style="endArrow=doubleBlock;html=1;rounded=0;strokeWidth=5;endFill=1;fillColor=#fad7ac;strokeColor=#b48e04;
+
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+        self.width = width
+        self.height = height
+        self.container = None
+
+    def __str__(self):
+        if self.container is None:
+            self._generate()
+        result = etree.tostring(self.container, pretty_print=True).decode('utf-8')
+        return result
+
+    def _generate(self, root=None):
+        if root is None:
+            layer = '00000000'
+        else:
+            layer = layer_id(root, name=self.layer)
+        container = create_line(layer, self.x1, self.y1, self.x2, self.y2, self.width, self.height,
+                                **self.kwargs)
+        self.container = container
+
+    def render(self, root):
+        self._generate(root)
+        root.append(self.container)
+
+    def append_to(self, root):
+        root.append(self.container)

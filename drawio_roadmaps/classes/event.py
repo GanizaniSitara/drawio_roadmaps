@@ -32,6 +32,7 @@ class Event:
     def __repr__(self):
         return f"{self.event_type.marker} {self.description} [{self.date.strftime('%Y-%m-%d')} " \
                f"{self.event_type.render_meta.fillColor}]"
+
     def to_string(self, indent=0):
         return ' ' * indent + repr(self)
 
@@ -47,7 +48,7 @@ class Event:
 
     def tubemap_station(self, root, layer, x, y, style):
         renderer = renderer_manager.get_renderer('event')
-        renderer.render_circle(self, root, x, y, style)
+        renderer.render_circle(self, root, layer, x, y, style)
         return
 
     def get_drawio_xml(self):

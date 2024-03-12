@@ -23,7 +23,7 @@ swimlanes:
     type: INDEPENDENT
     events:
       - name: SAML Platform Selection
-        date: 2024-02-01
+        date: 2024-03-01
         type: COMPLETED
       - name: Device Authentication
         date: 2025-07-01
@@ -32,7 +32,7 @@ swimlanes:
 
   - name: Profiles
     events:
-      - name: Core Profiles - Role model
+      - name: Core Profiles
         date: 2025-03-01
         type: TARGET
       # Add more events as needed

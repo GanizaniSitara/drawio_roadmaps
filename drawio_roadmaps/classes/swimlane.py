@@ -14,7 +14,7 @@ class Swimlane:
         self.roadmap_renderer = None
 
     def __str__(self, indent=0):
-        swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{self.type.render_meta.color}]\n"
+        swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{self.type.metadata_drawio.color}]\n"
         for event in self.events:
             swimlane_str += event.__str__(indent + 4)
         swimlane_str += '\n'
@@ -22,6 +22,21 @@ class Swimlane:
 
     def set_renderer(self, renderer):
         self.renderer = renderer
+
+    # Todo: This is output specifc implementation for Drawio, should be moved to the appropriate renderer
+    # and if we still want abstraction, should work equally for all output formats, we might even implement it here?
+    def tubemap_line(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style):
+        renderer = renderer_manager.get_renderer('swimlane')
+        renderer.render_line(root=root,
+                             layer=layer,
+                             begin_x=begin_x,
+                             begin_y=begin_y,
+                             end_x=end_x,
+                             end_y=end_y,
+                             width=width,
+                             height=height,
+                             style=style)
+        return
 
     def render(self, segment_width, years):
 
