@@ -3,10 +3,6 @@ import sys
 from drawio_roadmaps.loaders.loaders import RoadmapLoaderFactory
 from drawio_roadmaps.renderer_manager import RendererManager, RendererType
 
-
-# ToDo: Loaders need sorting out and moving out to the loaders module. No need for them to sit here.
-
-
 def main():
     if len(sys.argv) < 4:
         print("Usage: python main.py <source_type> <renderer_type> <source_path>")

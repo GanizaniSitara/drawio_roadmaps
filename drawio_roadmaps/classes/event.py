@@ -27,6 +27,7 @@ class Event:
 
     def __str__(self):
         # ToDo: we should remove the marker and put output specific implemenstation in the renderers
+        # Todo: consider further abstraction to roadmap element with ABCs?
         return f"{self.event_type.marker} {self.description}"
 
     def __repr__(self):

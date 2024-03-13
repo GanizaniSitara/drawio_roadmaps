@@ -30,7 +30,8 @@ This project allows users to create and visualize roadmaps in various formats, i
 - Render roadmaps in ASCII format for quick visualization in text environments.
 - Generate DrawIO files for detailed graphical representation.
 - Flexible renderer system allowing for future expansion to other formats.
-- Product lifelines in each swimlane, global switch to show swimlane timeline or both timelines and product lifelines. (In development, implemented in ASCII only for now, see lifelines under roadmap.yaml)
+- Product lifelines in each swimlane (Ascii only for now)
+- Global switch to show product lifelines (Ascii only for now)
 
 ## Setup
 

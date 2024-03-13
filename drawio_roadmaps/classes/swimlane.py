@@ -4,7 +4,7 @@ from drawio_roadmaps.enums.swimlane_type import SwimlaneType
 from drawio_roadmaps.renderer_manager import RendererManager
 
 from drawio_roadmaps.config import RoadmapConfig as config
-
+from datetime import datetime, date
 
 renderer_manager = RendererManager()
 
@@ -98,15 +98,53 @@ class Swimlane:
 
         result = swimlane_pad + swimlane_str + events_visual_line + events_str + swimlane_pad
 
+        # for lifeline in self.lifelines:
+        #     # Todo: should go into lifeline renderer
+        #     lifeline_str = f"| {lifeline.name}"
+        #     lifeline_str += ' ' * (segment_width - len(lifeline_str) + 1) + '|'
+        #
+        #     lifeline_str += (' ' + '.' * (((segment_width + 1) * (years)) - 12)
+        #                           + '>>>       ' + '|\n')
+        #
+        #     result += lifeline_str + swimlane_pad
+        #
+        # return result
+
+        # GPT-4
         for lifeline in self.lifelines:
-            # Todo: should go into lifeline renderer
-            lifeline_str = f"| {lifeline.name}"
+            # Check if from_date is provided; otherwise, start at the beginning of the roadmap
+            character_per_days = 365 // segment_width
+
+            if lifeline.from_date is not None:
+                start_offset = lifeline.from_date - datetime.strptime(str(self.roadmap.start_year), "%Y").date()
+                start_offset = start_offset.days // character_per_days
+            else:
+                start_offset = 1
+
+            # Check if to_date is provided; otherwise, end at the last year of the roadmap
+            if lifeline.to_date is not None:
+                end_offset = lifeline.to_date - datetime.strptime(str(self.roadmap.start_year), "%Y").date()
+                end_offset = end_offset.days // character_per_days
+                ending = '†'
+            else:
+                end_offset = (years * segment_width) - 7
+                ending = '>>>'
+
+
+            # Construct the lifeline string with appropriate padding and periods
+            lifeline_str = (f"| {lifeline.name}")
             lifeline_str += ' ' * (segment_width - len(lifeline_str) + 1) + '|'
 
-            lifeline_str += (' ' + '.' * (((segment_width + 1) * (years)) - 12)
-                                  + '>>>       ' + '|\n')
 
-            result += lifeline_str + swimlane_pad
+            leading_space = ' ' * start_offset
+            lifeline_str += leading_space
+            lifeline_space = '.' * (end_offset - start_offset) + ending
+            trailing_space = ' ' * ((years * (segment_width + 1) - len(leading_space + lifeline_space)) - 1)
+            lifeline_str += lifeline_space + trailing_space + '|\n'
+
+            # Append the constructed lifeline string to the result with a newline
+            result += lifeline_str
+
 
         return result
 

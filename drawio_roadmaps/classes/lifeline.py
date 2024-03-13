@@ -9,6 +9,8 @@ class LifeLine:
         self.roadmap = roadmap
         self.swimlane = swimlane
         self.roadmap_renderer = None
+        self.from_date = from_date
+        self.to_date = to_date
 
     def __str__(self, indent=0):
         lifeline_str = ' ' * indent + f"LifeLine: {self.name} [{self.type.metadata_drawio.color}]\n"
@@ -16,6 +18,12 @@ class LifeLine:
             lifeline_str += event.__str__(indent + 4)
         lifeline_str += '\n'
         return lifeline_str
+
+    def set_from(self, from_date):
+        self.from_date = from_date
+
+    def set_to(self, to_date):
+        self.to_date = to_date
 
     def set_renderer(self, renderer):
         self.renderer = renderer

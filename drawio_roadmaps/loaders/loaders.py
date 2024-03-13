@@ -48,10 +48,10 @@ class YamlRoadmapLoader(RoadmapLoader):
 
                 for lifeline_data in swimlane_data.get('lifelines', []):
                     lifeline = LifeLine(lifeline_data['name'])
-                    # for event_data in lifeline_data.get('events', []):
-                    #     event_type = EventType[event_data['type']] if 'type' in event_data else None
-                    #     event = Event(event_data['name'], event_data['date'], event_type)
-                    #     lifeline.add_event(event)
+                    if 'from' in lifeline_data:
+                        lifeline.set_from(lifeline_data['from'])
+                    if 'to' in lifeline_data:
+                        lifeline.set_to(lifeline_data['to'])
                     swimlane.add_lifeline(lifeline)
 
                 roadmap.add_swimlane(swimlane)

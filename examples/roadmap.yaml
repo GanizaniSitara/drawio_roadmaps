@@ -21,9 +21,15 @@ swimlanes:
         type: TARGET
     lifelines:
       - name: Expo
+        from: 2025-01-01
+        to: 2025-12-31
       - name: Wix
+        from: 2024-06-01
+        to: 2025-06-30
       - name: Callstack
       - name: Infinte Red
+        from: 2025-06-01
+        to: 2026-12-31
       - name: Software Mansion
   - name: Authentication
     type: INDEPENDENT
