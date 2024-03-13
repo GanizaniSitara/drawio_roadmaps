@@ -206,6 +206,9 @@ class DrawIORoadmapRenderer:
                                          style='fillColor=#ffffff;strokeColor=#000000;')
                 quarter_label.render(root)
 
+
+        ## needs to be pushed out to swimlane renderer
+
         for index, swimlane in enumerate(roadmap.swimlanes):
 
             # allow for the header
