@@ -1,10 +1,21 @@
+from typing import List, Optional
+
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
 from drawio_roadmaps.renderer_manager import RendererManager
+
+from drawio_roadmaps.config import RoadmapConfig as config
+
 
 renderer_manager = RendererManager()
 
 class Swimlane:
-    def __init__(self, name, roadmap=None, swimlane_type: SwimlaneType = SwimlaneType.PLATFORM):
+    def __init__(
+            self,
+            name,
+            roadmap=None,
+            swimlane_type: SwimlaneType = SwimlaneType.PLATFORM,
+            lifelines=None
+    ):
         self.name = name
         self.renderer = renderer_manager.get_renderer("swimlane")
 
@@ -12,11 +23,13 @@ class Swimlane:
         self.type = swimlane_type
         self.roadmap = roadmap
         self.roadmap_renderer = None
+        if lifelines is None:
+            self.lifelines = []
 
     def __str__(self, indent=0):
-        swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{self.type.metadata_drawio.color}]\n"
+        swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{getattr(self.type.metadata_drawio, 'color', '')}]\n"
         for event in self.events:
-            swimlane_str += event.__str__(indent + 4)
+            swimlane_str += event.to_string(indent + 4)
         swimlane_str += '\n'
         return swimlane_str
 
@@ -38,11 +51,20 @@ class Swimlane:
                              style=style)
         return
 
-    def render(self, segment_width, years):
+    def render(self):
+        # ToDo: The whole thing needs moving out to SwimlaneRenderer, for now only Acsii output uses this
+        # NOTE - This is totally pointless at the moment as implementation is here
+        # self.roadmap_renderer = self.roadmap.get_renderer()
 
-        # ToDo: Needs moving out to SwimlaneRenderer, for now only Acsii output uses this
 
-        self.roadmap_renderer = self.roadmap.get_renderer()
+        # ToDo: should be handled in config, we should also remember why this is ... :S
+        if config.Global.show_quarters:
+            segment_width = config.Ascii.segment_width - 1
+        else:
+            segment_width = config.Ascii.segment_width
+        years = self.roadmap.years
+
+
 
         swimlane_pad = '|' + ' ' * segment_width + '|' + ' ' * (years * (segment_width + 1) - 1) + '|\n'
 
@@ -55,6 +77,7 @@ class Swimlane:
         events_str = ''
 
         for event in self.events:
+            # ToDo: should go into event renderer
             # Calculate the offset based on the event's date
             offset = (event.date.year - self.roadmap.start_year) * 12 + event.date.month
             offset_segments = offset * 3  # 3 segments per month
@@ -67,13 +90,23 @@ class Swimlane:
 
 
             # Add spaces for the offset
-            event_str = '|' +  ' ' * self.roadmap_renderer.segment_width + '|' + ' ' * offset_segments + str(event)
+            event_str = '|' +  ' ' * segment_width + '|' + ' ' * offset_segments + str(event)
             event_str += ' ' * ((segment_width + 1) * (years + 1) - len(event_str)) + '|\n'
             events_str += event_str
 
         # events_visual_line = '|' + ' ' * segment_width + '|' + events_visual_line
 
         result = swimlane_pad + swimlane_str + events_visual_line + events_str + swimlane_pad
+
+        for lifeline in self.lifelines:
+            # Todo: should go into lifeline renderer
+            lifeline_str = f"| {lifeline.name}"
+            lifeline_str += ' ' * (segment_width - len(lifeline_str) + 1) + '|'
+
+            lifeline_str += (' ' + '.' * (((segment_width + 1) * (years)) - 12)
+                                  + '>>>       ' + '|\n')
+
+            result += lifeline_str + swimlane_pad
 
         return result
 
@@ -90,8 +123,8 @@ class Swimlane:
         self.events.append(event)
         self.events.sort(key=lambda x: x.date)
 
-    def add_timeline(self, timeline):
-        self.timelines.append(timeline)
+    def add_lifeline(self, lifeline):
+        self.lifelines.append(lifeline)
 
 
 

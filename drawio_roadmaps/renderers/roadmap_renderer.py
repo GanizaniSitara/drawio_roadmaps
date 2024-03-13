@@ -75,7 +75,8 @@ class AsciiRoadmapRenderer():
         result += roadmap_delim
 
         for swimlane in roadmap.swimlanes:
-            result += swimlane.render(segment_width=self.segment_width, years=roadmap.years)
+
+            result += swimlane.render()
             result += roadmap_delim
 
         return result

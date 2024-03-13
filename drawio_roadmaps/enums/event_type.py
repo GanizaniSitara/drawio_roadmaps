@@ -29,4 +29,4 @@ class EventType(Enum):
 
     @classmethod
     def get_legend_for_event_types(cls):
-        return ", ".join([f"{member.marker} {member.description} {member.metadata_drawio.fillColor}" for name, member in cls.__members__.items()])
+        return ", ".join([f"{member.marker} {member.description}" for name, member in cls.__members__.items()])

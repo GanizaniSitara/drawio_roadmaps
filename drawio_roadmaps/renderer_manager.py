@@ -4,6 +4,7 @@ from enum import Enum
 from drawio_roadmaps.renderers.roadmap_renderer import AsciiRoadmapRenderer, DrawIORoadmapRenderer, PowerPointRoadmapRenderer, StringRoadmapRenderer
 from drawio_roadmaps.renderers.swimlane_renderer import AsciiSwimlaneRenderer, DrawIOSwimlaneRenderer, PowerPointSwimlaneRenderer, StringSwimlaneRenderer
 from drawio_roadmaps.renderers.event_renderer import AsciiEventRenderer, DrawIOEventRenderer, PowerPointEventRenderer, StringEventRenderer
+from drawio_roadmaps.renderers.lifeline_renderer import AsciiLifeLineRenderer, DrawIOLifeLineRenderer, PowerPointLifeLineRenderer, StringLifeLineRenderer
 
 class RendererType(Enum):
     ASCII = "ascii"
@@ -23,21 +24,25 @@ class RendererManager:
                     "roadmap": AsciiRoadmapRenderer,
                     "swimlane": AsciiSwimlaneRenderer,
                     "event": AsciiEventRenderer,
+                    "lifeline": AsciiLifeLineRenderer,
                 },
                 RendererType.DRAWIO: {
                     "roadmap": DrawIORoadmapRenderer,
                     "swimlane": DrawIOSwimlaneRenderer,
                     "event": DrawIOEventRenderer,
+                    "lifeline": DrawIOLifeLineRenderer,
                 },
                 RendererType.POWERPOINT: {
                     "roadmap": PowerPointRoadmapRenderer,
                     "swimlane": PowerPointSwimlaneRenderer,
                     "event": PowerPointEventRenderer,
+                    "lifeline": PowerPointLifeLineRenderer,
                 },
                 RendererType.STRING: {
                     "roadmap": StringRoadmapRenderer,
                     "swimlane": StringSwimlaneRenderer,
                     "event": StringEventRenderer,
+                    "lifeline": StringLifeLineRenderer,
                 },
             }
         return cls._instance

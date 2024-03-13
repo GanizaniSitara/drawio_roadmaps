@@ -1,5 +1,5 @@
 import unittest
-from drawio_roadmaps.main import YamlRoadmapLoader
+from drawio_roadmaps.loaders.loaders import YamlRoadmapLoader
 from drawio_roadmaps.classes.roadmap import Roadmap
 from drawio_roadmaps.enums.event_type import EventType
 

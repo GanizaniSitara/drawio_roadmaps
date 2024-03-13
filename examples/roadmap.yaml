@@ -19,6 +19,12 @@ swimlanes:
       - name: Selective Native Framework
         date: 2025-12-01
         type: TARGET
+    lifelines:
+      - name: Expo
+      - name: Wix
+      - name: Callstack
+      - name: Infinte Red
+      - name: Software Mansion
   - name: Authentication
     type: INDEPENDENT
     events:

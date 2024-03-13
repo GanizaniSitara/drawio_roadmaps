@@ -30,6 +30,7 @@ This project allows users to create and visualize roadmaps in various formats, i
 - Render roadmaps in ASCII format for quick visualization in text environments.
 - Generate DrawIO files for detailed graphical representation.
 - Flexible renderer system allowing for future expansion to other formats.
+- Product lifelines in each swimlane, global switch to show swimlane timeline or both timelines and product lifelines. (In development, implemented in ASCII only for now, see lifelines under roadmap.yaml)
 
 ## Setup
 
@@ -70,6 +71,7 @@ WIP do not use - python main.py csv powerpoint examples/roadmap.csv
 python main.py database ascii examples/roadmap.csv
 python main.py database drawio examples/roadmap.csv
 WIP do not use - python main.py database powerpoint examples/roadmap.csv
+```
 
 ### Using "Inspect Drawio"
 This script and the associated example file examples\inspect.drawio, are intended to allow for quick view of what a particular style looks like in XML. First edit the .drwaio file to your liking and then output the inner XML by running
