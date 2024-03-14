@@ -27,3 +27,17 @@ class LifeLine:
 
     def set_renderer(self, renderer):
         self.renderer = renderer
+
+    def tubemap_line(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style, **kwargs):
+        renderer = renderer_manager.get_renderer('lifeline')
+        renderer.render_lifeline(root=root,
+                                 layer=layer,
+                                 begin_x=begin_x,
+                                 begin_y=begin_y,
+                                 end_x=end_x,
+                                 end_y=end_y,
+                                 width=width,
+                                 height=height,
+                                 style=style,
+                                 value=kwargs.get('value', ''))
+        return

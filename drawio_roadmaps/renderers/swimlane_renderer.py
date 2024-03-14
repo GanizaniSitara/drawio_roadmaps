@@ -91,7 +91,7 @@ class DrawIOSwimlaneRenderer(SwimlaneRenderer):
     def render(self, swimlane):
         return f"Swimlane DrawIO XML: {swimlane.name}"
 
-    def render_line(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style):
+    def render_swimline(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style, **kwargs):
         line = Line(root=root,
                     layer=layer,
                     x1=begin_x,
@@ -100,7 +100,8 @@ class DrawIOSwimlaneRenderer(SwimlaneRenderer):
                     y2=end_y,
                     width=width,
                     height=height,
-                    style=style)
+                    style=style,
+                    value=kwargs.get('value', ''))
         line.render(root)
         return
 

@@ -129,6 +129,7 @@ class Line:
         self.style = '' + ';'.join(f'{key}={value}' for key, value in self.style.items()) + ';'
         self.kwargs = {}
         self.kwargs['style'] = self.style
+        self.kwargs['value'] = kwargs.get('value', '')
         # style="endArrow=doubleBlock;html=1;rounded=0;strokeWidth=5;endFill=1;fillColor=#fad7ac;strokeColor=#b48e04;
 
         self.x1 = x1
@@ -206,9 +207,23 @@ class Rectangle:
     def __init__(self, name, x, y, width, height, **kwargs):
         self.kwargs = kwargs
         self.kwargs['value'] = name
-        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
-                                'strokeColor=#000000;')
+        self.style = {
+            'html': '1',
+            'strokeColor': 'none',
+            'fillColor': 'none',
+            'align': 'center',
+            'fontFamily': 'Verdana',
+            'verticalAlign': 'middle',
+            'whiteSpace': 'wrap',
+            'rounded': '0',
+            'fontSize': '14',
+            'strokeColor': '#000000',  # Note: 'strokeColor' appears twice, the last occurrence overrides the first
+        }
+
+        self.style.update(kwargs.get('style', {}))
+
+        self.kwargs['style'] = 'text;' + ';'.join(f'{key}={value}' for key, value in self.style.items())
+
         self.x1 = x
         self.y1 = y
         self.width = width

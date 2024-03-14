@@ -38,17 +38,18 @@ class Swimlane:
 
     # Todo: This is output specifc implementation for Drawio, should be moved to the appropriate renderer
     # and if we still want abstraction, should work equally for all output formats, we might even implement it here?
-    def tubemap_line(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style):
+    def tubemap_line(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style, **kwargs):
         renderer = renderer_manager.get_renderer('swimlane')
-        renderer.render_line(root=root,
-                             layer=layer,
-                             begin_x=begin_x,
-                             begin_y=begin_y,
-                             end_x=end_x,
-                             end_y=end_y,
-                             width=width,
-                             height=height,
-                             style=style)
+        renderer.render_swimline(root=root,
+                                 layer=layer,
+                                 begin_x=begin_x,
+                                 begin_y=begin_y,
+                                 end_x=end_x,
+                                 end_y=end_y,
+                                 width=width,
+                                 height=height,
+                                 style=style,
+                                 value=kwargs.get('value', ''))
         return
 
     def height(self):

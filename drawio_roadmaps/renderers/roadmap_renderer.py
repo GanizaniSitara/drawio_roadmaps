@@ -7,6 +7,7 @@ from drawio_roadmaps.drawio import drawio_shared_functions
 from drawio_roadmaps.config import DRAWIO_EXECUTABLE_PATH
 from drawio_roadmaps.config import RoadmapConfig as config
 
+from datetime import datetime, date
 from lxml import etree
 import os
 
@@ -100,6 +101,8 @@ class DrawIORoadmapRenderer:
         self.create_header(roadmap, root, swimlane_height_px, year_lenght_px, years)
 
 
+        xy_cursor = (0, swimlane_height_px) # allow for header
+
         for index, swimlane in enumerate(roadmap.swimlanes):
 
             # the + allows for the header
@@ -108,14 +111,26 @@ class DrawIORoadmapRenderer:
             # so we need to work out the total height of each swimlane ahead of time
             # and then use that to calculate the y position of the next swimlane
 
-            xy_cursor = (0, (index + 1) * swimlane_height_px)
 
-            lane = Rectangle('', xy_cursor[0] + year_lenght_px, xy_cursor[1],
+
+            lane = Rectangle('',
+                             xy_cursor[0] + year_lenght_px,
+                             xy_cursor[1],
                              year_lenght_px * (len(years)),
-                             swimlane_height_px, style='fillColor=#ffffff;strokeColor=#000000;')
+                             swimlane.height(),
+                             style={
+                                    'strokeColor': '#000000;'
+                                    })
             lane.render(root)
 
-            swimlane_label = Rectangle(swimlane.name, xy_cursor[0], xy_cursor[1], year_lenght_px, swimlane_height_px)
+            style = {'verticalAlign': 'top', 'spacingTop': '36'} if swimlane.lifelines else {}
+
+            swimlane_label = Rectangle(swimlane.name,
+                                       xy_cursor[0],
+                                       xy_cursor[1],
+                                       year_lenght_px,
+                                       swimlane.height(),
+                                       style=style)
             swimlane_label.render(root)
 
             xy_timeline_begin = (xy_cursor[0] + year_lenght_px + 50  # start of line magic gap
@@ -137,7 +152,8 @@ class DrawIORoadmapRenderer:
                                       'strokeColor': swimlane.type.metadata_drawio.strokeColor,
                                       'strokeWidth': '5',
                                       'endArrow': 'doubleBlock'
-                                  })
+                                  },
+                                  value='')
 
 
             for event in swimlane.events:
@@ -159,6 +175,42 @@ class DrawIORoadmapRenderer:
                                           'fillColor': event.event_type.render_meta.fillColor
                                       })
 
+            xy_timeline_begin = (xy_timeline_begin[0] - 50, xy_timeline_begin[1] + swimlane_height_px // 2 + 10) # todo remove magic
+            xy_timeline_end = (xy_timeline_end[0] - 50, xy_timeline_end[1] + swimlane_height_px // 2 + 10)
+
+            for index, lifeline in enumerate(swimlane.lifelines):
+
+                if lifeline.from_date is None:
+                    lifeline.from_date = date(roadmap.start_year, 1, 1)
+                if lifeline.to_date is None:
+                    lifeline.to_date = date(roadmap.start_year + roadmap.years, 1, 1)
+                start_position_ratio = (lifeline.from_date - date(roadmap.start_year,1,1)).days / (365.25 * roadmap.years)
+                end_position_ratio = (lifeline.to_date - date(roadmap.start_year,1,1)).days / (365.25 * roadmap.years)
+
+                lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years
+                lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years
+
+                lifeline.tubemap_line(root=root,
+                                      layer="Default",
+                                      #begin_x=xy_timeline_begin[0],
+                                      begin_x=lifeline_begin_x,
+                                      begin_y=xy_timeline_begin[1] + index * (swimlane_height_px // 4), # todo remove magic
+                                      #end_x=xy_timeline_end[0],
+                                      end_x=lifeline_end_x,
+                                      end_y=xy_timeline_end[1] + index * (swimlane_height_px // 4), # todo remove magic
+                                      width=2,
+                                      height=2,
+                                      style={
+                                            'strokeColor': '#B0E0E6',
+                                            'strokeWidth': '5',
+                                            'endArrow': 'oval',
+                                            },
+                                      value=lifeline.name)
+
+            print(f"Swimlane {swimlane.name} height: {swimlane.height()}")
+            actual_height = swimlane.height()
+            xy_cursor = (xy_cursor[0], xy_cursor[1] + actual_height)
+
         # "Pretty Print" to console is not really required but we like to pretty print the XML just for comparison
         # and visual confirmation of what's being produced
         # Encoding required for use in Confluence/Web
@@ -172,7 +224,10 @@ class DrawIORoadmapRenderer:
 
     def create_header(self, roadmap, root, swimlane_height, year_lenght_px, years):
         swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height,
-                                    style='fillColor=#ffffff;strokeColor=#000000;')
+                                    style={
+                                        'fillColor': '#ffffff',
+                                        'strokeColor': '#000000;'
+                                    })
         swimlane_header.render(root)
         for index, year in enumerate(years):
             xy_cursor = (year_lenght_px * (index + 1), 0)
@@ -181,7 +236,10 @@ class DrawIORoadmapRenderer:
                                    y=xy_cursor[1],
                                    width=year_lenght_px,
                                    height=swimlane_height,
-                                   style='fillColor=#ffffff;strokeColor=#000000;')
+                                   style={
+                                       'fillColor': '#ffffff',
+                                       'strokeColor': '#000000;'
+                                   })
             year_label.render(root)
         if config.Global.show_quarters:
             # Copilot auto generated this code
@@ -192,7 +250,10 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                                          style={
+                                              'fillColor': '#ffffff',
+                                              'strokeColor': '#000000;'
+                                          })
                 quarter_label.render(root)
                 xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 4, swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q2",
@@ -200,7 +261,10 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                                          style={
+                                              'fillColor': '#ffffff',
+                                              'strokeColor': '#000000;'
+                                          })
                 quarter_label.render(root)
                 xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 2, swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q3",
@@ -208,7 +272,10 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                                          style={
+                                              'fillColor': '#ffffff',
+                                              'strokeColor': '#000000;'
+                                          })
                 quarter_label.render(root)
                 xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px * 3 / 4, swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q4",
@@ -216,7 +283,10 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                                          style={
+                                              'fillColor': '#ffffff',
+                                              'strokeColor': '#000000;'
+                                          })
                 quarter_label.render(root)
 
     @staticmethod
