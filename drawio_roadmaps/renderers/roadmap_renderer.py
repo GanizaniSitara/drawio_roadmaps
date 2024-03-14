@@ -1,5 +1,5 @@
-from drawio_roadmaps.drawio.drawio_shapes import create_line
-from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
+from drawio_roadmaps.drawio.drawio_shapes import Rectangle
+from drawio_roadmaps.drawio.drawio_helpers import id_generator
 from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
 from drawio_roadmaps.drawio import drawio_shared_functions
@@ -82,152 +82,48 @@ class AsciiRoadmapRenderer():
         return result
 
 
-# ToDo: Move out of here to drawio objects file
-def create_rectangle(parent, x, y, width, height, **kwargs):
-    try:
-        mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
-        mxcell.set('value', kwargs.get('value', ''))
-        mxcell.set('style', kwargs.get('style', ''))
-        mxcell.set('parent', parent)
-        mxcell.set('vertex', '1')
-
-        mxGeometry = etree.Element('mxGeometry')
-        mxGeometry.set('x', str(x))
-        mxGeometry.set('y', str(y))
-        mxGeometry.set('width', str(width))
-        mxGeometry.set('height', str(height))
-        mxGeometry.set('as', 'geometry')
-        mxcell.append(mxGeometry)
-        return mxcell
-    except Exception as e:
-        print(e)
-        RuntimeError('Error creating rectangle')
-
-
-class Label:
-    def __init__(self, name, x, y, width, height, **kwargs):
-        self.kwargs = kwargs
-        self.kwargs['value'] = name
-        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
-                                'labelBackgroundColor=#ffffff;')
-        self.x1 = x
-        self.y1 = y
-        self.width = width
-        self.height = height
-
-    def render(self, root):
-        layer = layer_id(root, 'Default')
-        container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
-        root.append(container)
-
-
-class Rectangle:
-    def __init__(self, name, x, y, width, height, **kwargs):
-        self.kwargs = kwargs
-        self.kwargs['value'] = name
-        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
-                                'strokeColor=#000000;')
-        self.x1 = x
-        self.y1 = y
-        self.width = width
-        self.height = height
-
-    def render(self, root):
-        layer = layer_id(root, 'Default')
-        container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
-        root.append(container)
-
-
 class DrawIORoadmapRenderer:
 
     def render(self, roadmap):
+
+        year_lenght_px = config.DrawIO.year_length_px
+        swimlane_height_px = config.DrawIO.swimlane_height_px
 
         mxGraphModel = self.get_diagram_root()
         root = mxGraphModel.find("root")
         self.append_layers(root)
 
+        # Todo get years based on dates in roadmap - this is not implemented in Ascii
         years = [str(x) for x in range(roadmap.start_year, roadmap.start_year + roadmap.years)]
-        year_lenght_px = 240
-        diagram_width = year_lenght_px + year_lenght_px * len(
-            years)  # start with swimlane headers equating to width of 1
-        swimlane_height = 100
 
-        # ToDo: draw swimlanes headers
-        swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height,
-                                    style='fillColor=#ffffff;strokeColor=#000000;')
-        swimlane_header.render(root)
+        # write out the header
+        self.create_header(roadmap, root, swimlane_height_px, year_lenght_px, years)
 
-        for index, year in enumerate(years):
-            xy_cursor = (year_lenght_px * (index + 1), 0)
-            year_label = Rectangle(year,
-                                   x=xy_cursor[0],
-                                   y=xy_cursor[1],
-                                   width=year_lenght_px,
-                                   height=swimlane_height,
-                                   style='fillColor=#ffffff;strokeColor=#000000;')
-            year_label.render(root)
-
-        if config.Global.show_quarters:
-            # Copilot auto generated this code
-            for index, year in enumerate(years):
-                xy_cursor = (year_lenght_px * (index + 1), swimlane_height * 0.75)
-                quarter_label = Rectangle(f"Q1",
-                                         x=xy_cursor[0],
-                                         y=xy_cursor[1],
-                                         width=year_lenght_px / 4,
-                                         height=swimlane_height * 0.25,
-                                         style='fillColor=#ffffff;strokeColor=#000000;')
-                quarter_label.render(root)
-                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 4, swimlane_height * 0.75)
-                quarter_label = Rectangle(f"Q2",
-                                         x=xy_cursor[0],
-                                         y=xy_cursor[1],
-                                         width=year_lenght_px / 4,
-                                         height=swimlane_height * 0.25,
-                                         style='fillColor=#ffffff;strokeColor=#000000;')
-                quarter_label.render(root)
-                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 2, swimlane_height * 0.75)
-                quarter_label = Rectangle(f"Q3",
-                                         x=xy_cursor[0],
-                                         y=xy_cursor[1],
-                                         width=year_lenght_px / 4,
-                                         height=swimlane_height * 0.25,
-                                         style='fillColor=#ffffff;strokeColor=#000000;')
-                quarter_label.render(root)
-                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px * 3 / 4, swimlane_height * 0.75)
-                quarter_label = Rectangle(f"Q4",
-                                         x=xy_cursor[0],
-                                         y=xy_cursor[1],
-                                         width=year_lenght_px / 4,
-                                         height=swimlane_height * 0.25,
-                                         style='fillColor=#ffffff;strokeColor=#000000;')
-                quarter_label.render(root)
-
-
-        ## needs to be pushed out to swimlane renderer
 
         for index, swimlane in enumerate(roadmap.swimlanes):
 
-            # allow for the header
-            xy_cursor = (0, (index + 1) * swimlane_height)
+            # the + allows for the header
+            # the idea with xy_cursor is to keep track of where we are in the diagram,
+            # but it needs to account for variable additional lifelines in each swimlane
+            # so we need to work out the total height of each swimlane ahead of time
+            # and then use that to calculate the y position of the next swimlane
+
+            xy_cursor = (0, (index + 1) * swimlane_height_px)
 
             lane = Rectangle('', xy_cursor[0] + year_lenght_px, xy_cursor[1],
                              year_lenght_px * (len(years)),
-                             swimlane_height, style='fillColor=#ffffff;strokeColor=#000000;')
+                             swimlane_height_px, style='fillColor=#ffffff;strokeColor=#000000;')
             lane.render(root)
 
-            swimlane_label = Rectangle(swimlane.name, xy_cursor[0], xy_cursor[1], year_lenght_px, swimlane_height)
+            swimlane_label = Rectangle(swimlane.name, xy_cursor[0], xy_cursor[1], year_lenght_px, swimlane_height_px)
             swimlane_label.render(root)
 
             xy_timeline_begin = (xy_cursor[0] + year_lenght_px + 50  # start of line magic gap
-                                 , xy_cursor[1] + int(swimlane_height / 2))
+                                 , xy_cursor[1] + int(swimlane_height_px / 2))
 
             xy_timeline_end = (
             xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - 50  # end of line magic gap
-            , xy_cursor[1] + int(swimlane_height / 2))
+            , xy_cursor[1] + int(swimlane_height_px / 2))
 
             swimlane.tubemap_line(root=root,
                                   layer="Default",
@@ -254,7 +150,7 @@ class DrawIORoadmapRenderer:
                 # should go to config, although unlikely to change
                 # so 9 in the line below for half tube station height
 
-                y = xy_cursor[1] + int(swimlane_height / 2) - 9
+                y = xy_cursor[1] + int(swimlane_height_px / 2) - 9
                 event.tubemap_station(root=root,
                                       layer="Default",
                                       x=x,
@@ -263,7 +159,8 @@ class DrawIORoadmapRenderer:
                                           'fillColor': event.event_type.render_meta.fillColor
                                       })
 
-        # "Pretty Print" to console is not really required but we like to pretty pring the XML just for comparison
+        # "Pretty Print" to console is not really required but we like to pretty print the XML just for comparison
+        # and visual confirmation of what's being produced
         # Encoding required for use in Confluence/Web
         # Open desktop drawio for convenience
 
@@ -272,6 +169,55 @@ class DrawIORoadmapRenderer:
         os.system(f'"{DRAWIO_EXECUTABLE_PATH}" output.drawio')
 
         return "DrawIO roadmap generated successfully!"
+
+    def create_header(self, roadmap, root, swimlane_height, year_lenght_px, years):
+        swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height,
+                                    style='fillColor=#ffffff;strokeColor=#000000;')
+        swimlane_header.render(root)
+        for index, year in enumerate(years):
+            xy_cursor = (year_lenght_px * (index + 1), 0)
+            year_label = Rectangle(year,
+                                   x=xy_cursor[0],
+                                   y=xy_cursor[1],
+                                   width=year_lenght_px,
+                                   height=swimlane_height,
+                                   style='fillColor=#ffffff;strokeColor=#000000;')
+            year_label.render(root)
+        if config.Global.show_quarters:
+            # Copilot auto generated this code
+            for index, year in enumerate(years):
+                xy_cursor = (year_lenght_px * (index + 1), swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q1",
+                                          x=xy_cursor[0],
+                                          y=xy_cursor[1],
+                                          width=year_lenght_px / 4,
+                                          height=swimlane_height * 0.25,
+                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 4, swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q2",
+                                          x=xy_cursor[0],
+                                          y=xy_cursor[1],
+                                          width=year_lenght_px / 4,
+                                          height=swimlane_height * 0.25,
+                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 2, swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q3",
+                                          x=xy_cursor[0],
+                                          y=xy_cursor[1],
+                                          width=year_lenght_px / 4,
+                                          height=swimlane_height * 0.25,
+                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
+                xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px * 3 / 4, swimlane_height * 0.75)
+                quarter_label = Rectangle(f"Q4",
+                                          x=xy_cursor[0],
+                                          y=xy_cursor[1],
+                                          width=year_lenght_px / 4,
+                                          height=swimlane_height * 0.25,
+                                          style='fillColor=#ffffff;strokeColor=#000000;')
+                quarter_label.render(root)
 
     @staticmethod
     def create_layer(self, name):

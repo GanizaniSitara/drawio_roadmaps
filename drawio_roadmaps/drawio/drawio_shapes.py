@@ -160,3 +160,61 @@ class Line:
 
     def append_to(self, root):
         root.append(self.container)
+
+
+def create_rectangle(parent, x, y, width, height, **kwargs):
+    try:
+        mxcell = etree.Element('mxCell')
+        mxcell.set('id', id_generator())
+        mxcell.set('value', kwargs.get('value', ''))
+        mxcell.set('style', kwargs.get('style', ''))
+        mxcell.set('parent', parent)
+        mxcell.set('vertex', '1')
+
+        mxGeometry = etree.Element('mxGeometry')
+        mxGeometry.set('x', str(x))
+        mxGeometry.set('y', str(y))
+        mxGeometry.set('width', str(width))
+        mxGeometry.set('height', str(height))
+        mxGeometry.set('as', 'geometry')
+        mxcell.append(mxGeometry)
+        return mxcell
+    except Exception as e:
+        print(e)
+        RuntimeError('Error creating rectangle')
+
+
+class Label:
+    def __init__(self, name, x, y, width, height, **kwargs):
+        self.kwargs = kwargs
+        self.kwargs['value'] = name
+        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
+                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
+                                'labelBackgroundColor=#ffffff;')
+        self.x1 = x
+        self.y1 = y
+        self.width = width
+        self.height = height
+
+    def render(self, root):
+        layer = layer_id(root, 'Default')
+        container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
+        root.append(container)
+
+
+class Rectangle:
+    def __init__(self, name, x, y, width, height, **kwargs):
+        self.kwargs = kwargs
+        self.kwargs['value'] = name
+        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
+                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
+                                'strokeColor=#000000;')
+        self.x1 = x
+        self.y1 = y
+        self.width = width
+        self.height = height
+
+    def render(self, root):
+        layer = layer_id(root, 'Default')
+        container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
+        root.append(container)

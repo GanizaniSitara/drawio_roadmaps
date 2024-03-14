@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Ascii_01_from_yaml" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="Ascii_1_from_yaml" type="PythonConfigurationType" factoryName="Python">
     <module name="drawio_roadmaps" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />

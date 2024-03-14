@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Ascii_All" type="CompoundRunConfigurationType">
-    <toRun name="Ascii_01_from_yaml" type="PythonConfigurationType" />
+    <toRun name="Ascii_1_from_yaml" type="PythonConfigurationType" />
     <toRun name="Ascii_2_from_csv" type="PythonConfigurationType" />
     <toRun name="Ascii_3_from_db" type="PythonConfigurationType" />
     <method v="2" />

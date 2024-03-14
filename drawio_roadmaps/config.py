@@ -11,6 +11,8 @@ class RoadmapConfig:
         pass
 
     class DrawIO:
+        year_length_px = 240
+        swimlane_height_px = 100
         pass
 
     class PowerPoint:

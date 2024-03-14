@@ -21,13 +21,10 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
             segment_width = config.Ascii.segment_width
         years = swimlane.roadmap.years
 
-
-
         swimlane_pad = '|' + ' ' * segment_width + '|' + ' ' * (years * (segment_width + 1) - 1) + '|\n'
 
         swimlane_str = f"| {swimlane.name}"
         swimlane_str += ' ' * (segment_width - len(swimlane_str) + 1) + '|'
-
 
         events_visual_line = (' ' + swimlane.get_swimlane_marker() * (((segment_width + 1) * (years)) - 12)
                          + '>>>       ' + '|\n')
@@ -45,7 +42,6 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
                                       event.get_event_marker() + events_visual_line[
                                                                                   offset_segments + 1:])
 
-
             # Add spaces for the offset
             event_str = '|' +  ' ' * segment_width + '|' + ' ' * offset_segments + str(event)
             event_str += ' ' * ((segment_width + 1) * (years + 1) - len(event_str)) + '|\n'
@@ -55,19 +51,7 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
 
         result = swimlane_pad + swimlane_str + events_visual_line + events_str + swimlane_pad
 
-        # for lifeline in self.lifelines:
-        #     # Todo: should go into lifeline renderer
-        #     lifeline_str = f"| {lifeline.name}"
-        #     lifeline_str += ' ' * (segment_width - len(lifeline_str) + 1) + '|'
-        #
-        #     lifeline_str += (' ' + '.' * (((segment_width + 1) * (years)) - 12)
-        #                           + '>>>       ' + '|\n')
-        #
-        #     result += lifeline_str + swimlane_pad
-        #
-        # return result
-
-        # GPT-4
+        # GPT-4 unsuccessful had to be done by hand
         for lifeline in swimlane.lifelines:
             # Check if from_date is provided; otherwise, start at the beginning of the roadmap
             character_per_days = 365 // segment_width
@@ -87,11 +71,9 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
                 end_offset = (years * segment_width) - 7
                 ending = '>>>'
 
-
             # Construct the lifeline string with appropriate padding and periods
             lifeline_str = (f"| {lifeline.name}")
             lifeline_str += ' ' * (segment_width - len(lifeline_str) + 1) + '|'
-
 
             leading_space = ' ' * start_offset
             lifeline_str += leading_space
@@ -101,7 +83,6 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
 
             # Append the constructed lifeline string to the result with a newline
             result += lifeline_str
-
 
         return result
 

@@ -51,6 +51,9 @@ class Swimlane:
                              style=style)
         return
 
+    def height(self):
+        return config.DrawIO.swimlane_height_px + (len(self.lifelines) * config.DrawIO.swimlane_height_px // 4)
+
     def render(self):
         result = renderer_manager.get_renderer('swimlane').render(self)
         return result
