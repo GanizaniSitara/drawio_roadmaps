@@ -1,4 +1,4 @@
-import drawio_roadmaps.drawio.drawio_tools as drawio_tools
+import drawio_roadmaps.drawio.drawio_serialization as drawio_tools
 import lxml.etree as etree
 from xml.etree import ElementTree
 

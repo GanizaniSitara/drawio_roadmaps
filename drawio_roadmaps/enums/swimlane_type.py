@@ -6,7 +6,6 @@ class SwimlaneMetadataDrawio:
     strokeColor: str
 
 
-# TODO: Implement
 class SwimlaneMetadataAscii:
     marker: str
 

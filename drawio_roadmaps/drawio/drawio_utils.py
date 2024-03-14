@@ -1,7 +1,7 @@
 from lxml import etree
 import random
 import string
-from drawio_roadmaps.drawio import drawio_tools
+from drawio_roadmaps.drawio import drawio_serialization
 import xml.dom.minidom
 
 def id_generator(size=22, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase + '-_'):
@@ -40,7 +40,7 @@ def write_drawio_output(data, filename='output.drawio'):
 
 def encode_and_save_to_file(mxGraphModel, filename='output.drawio'):
     data = etree.tostring(mxGraphModel, pretty_print=False)
-    data = drawio_tools.encode_diagram_data(data)
+    data = drawio_serialization.encode_diagram_data(data)
     write_drawio_output(data, filename)
 
 
@@ -48,3 +48,14 @@ def pretty_print_to_console(mxGraphModel):
     dom = xml.dom.minidom.parseString(etree.tostring(mxGraphModel))
     pretty_xml_as_string = dom.toprettyxml()
     print(pretty_xml_as_string)
+
+
+def id_generator_2(size=22, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase + '-_'):
+    return ''.join(random.choice(chars) for _ in range(size))
+
+
+def layer_id_2(root, name):
+    for node in root.findall('.//mxCell[@parent="0"]'):
+        if node.get('value') == name:
+            return node.get('id')
+    raise RuntimeError('Layer ' + name + ' not found')

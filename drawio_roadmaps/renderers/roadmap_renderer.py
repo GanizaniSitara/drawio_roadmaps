@@ -1,8 +1,8 @@
 from drawio_roadmaps.drawio.drawio_shapes import Rectangle
-from drawio_roadmaps.drawio.drawio_helpers import id_generator
+from drawio_roadmaps.drawio.drawio_utils import id_generator_2
 from drawio_roadmaps.enums.event_type import EventType
 from drawio_roadmaps.enums.swimlane_type import SwimlaneType
-from drawio_roadmaps.drawio import drawio_shared_functions
+from drawio_roadmaps.drawio import drawio_utils
 
 from drawio_roadmaps.config import DRAWIO_EXECUTABLE_PATH
 from drawio_roadmaps.config import RoadmapConfig as config
@@ -188,6 +188,7 @@ class DrawIORoadmapRenderer:
                 end_position_ratio = (lifeline.to_date - date(roadmap.start_year,1,1)).days / (365.25 * roadmap.years)
 
                 lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years
+                # Todo: fix up the ending to start in line with siwmlane tubelines
                 lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years
 
                 lifeline.tubemap_line(root=root,
@@ -216,8 +217,8 @@ class DrawIORoadmapRenderer:
         # Encoding required for use in Confluence/Web
         # Open desktop drawio for convenience
 
-        drawio_shared_functions.pretty_print_to_console(mxGraphModel)
-        drawio_shared_functions.encode_and_save_to_file(mxGraphModel)
+        drawio_utils.pretty_print_to_console(mxGraphModel)
+        drawio_utils.encode_and_save_to_file(mxGraphModel)
         os.system(f'"{DRAWIO_EXECUTABLE_PATH}" output.drawio')
 
         return "DrawIO roadmap generated successfully!"
@@ -292,7 +293,7 @@ class DrawIORoadmapRenderer:
     @staticmethod
     def create_layer(self, name):
         mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
+        mxcell.set('id', id_generator_2())
         mxcell.set('value', name)
         mxcell.set('style', 'locked=0')
         mxcell.set('parent', '0')

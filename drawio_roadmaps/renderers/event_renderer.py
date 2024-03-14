@@ -1,6 +1,7 @@
 
 from drawio_roadmaps.drawio.drawio_shapes import Circle
-from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
+from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
+
 
 class EventRenderer:
     def render_event(self, event, segment_width, years):
@@ -30,7 +31,7 @@ class DrawIOEventRenderer(EventRenderer):
 
     def render_circle(self, event, root, layer, x, y, style):
         circle = Circle(event.name,
-                        layer=layer_id(root, name=layer),
+                        layer=layer_id_2(root, name=layer),
                         x=x,
                         y=y,
                         width=18,

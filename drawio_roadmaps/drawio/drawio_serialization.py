@@ -1,9 +1,11 @@
-import base64, zlib
-from urllib.parse import quote, unquote, quote_plus
+import base64
+import zlib
+from urllib.parse import quote, unquote
+
 
 # functions courtesy of
 # https://stackoverflow.com/questions/46351275/using-pako-deflate-with-python
-# TODO: refactor - it seems like drawio_tools and helpers and shared functions could all be one file
+
 def js_encode_uri_component(data):
     return quote(data, safe='~()*!.\'')
 
@@ -57,9 +59,3 @@ def encode_stencil(data):
     data = js_btoa(data)
     data = data.decode("utf-8")
     return data
-
-
-
-
-
-

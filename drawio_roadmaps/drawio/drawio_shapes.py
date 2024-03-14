@@ -1,11 +1,11 @@
 from lxml import etree
-from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
+from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
 
 
 def create_circle(parent, x, y, width, height, **kwargs):
     try:
         mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
+        mxcell.set('id', id_generator_2())
         mxcell.set('value', kwargs.get('value', ''))
         mxcell.set('style', kwargs.get('style', ''))
         mxcell.set('vertex', '1')
@@ -73,7 +73,7 @@ class Circle:
         if root is None:
             layer = '00000000'
         else:
-            layer = layer_id(root, 'Default')
+            layer = layer_id_2(root, 'Default')
         container = create_circle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         self.container = container
 
@@ -88,7 +88,7 @@ class Circle:
 def create_line(parent, x1, y1, x2, y2, width, height, **kwargs):
     try:
         mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
+        mxcell.set('id', id_generator_2())
         if 'value' in kwargs:
             mxcell.set('value', kwargs.get('value', ''))
         mxcell.set('style', kwargs.get('style', ''))
@@ -150,7 +150,7 @@ class Line:
         if root is None:
             layer = '00000000'
         else:
-            layer = layer_id(root, name=self.layer)
+            layer = layer_id_2(root, name=self.layer)
         container = create_line(layer, self.x1, self.y1, self.x2, self.y2, self.width, self.height,
                                 **self.kwargs)
         self.container = container
@@ -166,7 +166,7 @@ class Line:
 def create_rectangle(parent, x, y, width, height, **kwargs):
     try:
         mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator())
+        mxcell.set('id', id_generator_2())
         mxcell.set('value', kwargs.get('value', ''))
         mxcell.set('style', kwargs.get('style', ''))
         mxcell.set('parent', parent)
@@ -198,7 +198,7 @@ class Label:
         self.height = height
 
     def render(self, root):
-        layer = layer_id(root, 'Default')
+        layer = layer_id_2(root, 'Default')
         container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         root.append(container)
 
@@ -230,6 +230,6 @@ class Rectangle:
         self.height = height
 
     def render(self, root):
-        layer = layer_id(root, 'Default')
+        layer = layer_id_2(root, 'Default')
         container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
         root.append(container)

@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from drawio_roadmaps.drawio.drawio_shapes import Line
-from drawio_roadmaps.drawio.drawio_helpers import id_generator, layer_id
+from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
 
 from drawio_roadmaps.config import RoadmapConfig as config
 
