@@ -1,9 +1,11 @@
 from drawio_roadmaps.renderer_manager import RendererManager
+from drawio_roadmaps.enums.lifeline_type import LifeLineType
 
 renderer_manager = RendererManager()
 
 class LifeLine:
-    def __init__(self, name, roadmap=None, swimlane=None, from_date=None, to_date=None):
+    def __init__(self, name, roadmap=None, swimlane=None, from_date=None, to_date=None,
+                 lifeline_type: LifeLineType = LifeLineType.NONE):
         self.name = name
         self.renderer = renderer_manager.get_renderer("lifeline")
         self.roadmap = roadmap
@@ -11,6 +13,8 @@ class LifeLine:
         self.roadmap_renderer = None
         self.from_date = from_date
         self.to_date = to_date
+        self.type = lifeline_type
+        self.render_meta = None
 
     def __str__(self, indent=0):
         lifeline_str = ' ' * indent + f"LifeLine: {self.name} [{self.type.metadata_drawio.color}]\n"
@@ -24,6 +28,11 @@ class LifeLine:
 
     def set_to(self, to_date):
         self.to_date = to_date
+
+    def set_lifeline_type(self, type):
+        self.type = type
+
+
 
     def set_renderer(self, renderer):
         self.renderer = renderer

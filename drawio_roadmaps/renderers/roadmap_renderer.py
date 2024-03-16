@@ -133,11 +133,13 @@ class DrawIORoadmapRenderer:
                                        style=style)
             swimlane_label.render(root)
 
-            xy_timeline_begin = (xy_cursor[0] + year_lenght_px + 50  # start of line magic gap
+            typographic_line_gap = 20  # todo remove magic
+
+            xy_timeline_begin = (xy_cursor[0] + year_lenght_px + typographic_line_gap
                                  , xy_cursor[1] + int(swimlane_height_px / 2))
 
             xy_timeline_end = (
-            xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - 50  # end of line magic gap
+            xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - typographic_line_gap
             , xy_cursor[1] + int(swimlane_height_px / 2))
 
             swimlane.tubemap_line(root=root,
@@ -154,7 +156,6 @@ class DrawIORoadmapRenderer:
                                       'endArrow': 'doubleBlock'
                                   },
                                   value='')
-
 
             for event in swimlane.events:
                 x = xy_cursor[0] + \
@@ -175,34 +176,33 @@ class DrawIORoadmapRenderer:
                                           'fillColor': event.event_type.render_meta.fillColor
                                       })
 
-            xy_timeline_begin = (xy_timeline_begin[0] - 50, xy_timeline_begin[1] + swimlane_height_px // 2 + 10) # todo remove magic
-            xy_timeline_end = (xy_timeline_end[0] - 50, xy_timeline_end[1] + swimlane_height_px // 2 + 10)
+            xy_timeline_begin = (xy_timeline_begin[0] - typographic_line_gap, xy_timeline_begin[1] + swimlane_height_px // 2 + 10) # todo remove magic
+            xy_timeline_end = (xy_timeline_end[0] - typographic_line_gap, xy_timeline_end[1] + swimlane_height_px // 2 + 10)
 
-            for index, lifeline in enumerate(swimlane.lifelines):
+            for ix_lf, lifeline in enumerate(swimlane.lifelines):
 
-                if lifeline.from_date is None:
-                    lifeline.from_date = date(roadmap.start_year, 1, 1)
-                if lifeline.to_date is None:
-                    lifeline.to_date = date(roadmap.start_year + roadmap.years, 1, 1)
-                start_position_ratio = (lifeline.from_date - date(roadmap.start_year,1,1)).days / (365.25 * roadmap.years)
-                end_position_ratio = (lifeline.to_date - date(roadmap.start_year,1,1)).days / (365.25 * roadmap.years)
+                start_gap = typographic_line_gap if lifeline.from_date is None else 0
+                lifeline.from_date = lifeline.from_date or date(roadmap.start_year, 1, 1)
 
-                lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years
-                # Todo: fix up the ending to start in line with siwmlane tubelines
-                lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years
+                end_gap = typographic_line_gap if lifeline.to_date is None else 0
+                lifeline.to_date = lifeline.to_date or date(roadmap.start_year + roadmap.years, 1, 1)
+
+                start_position_ratio = (lifeline.from_date - date(roadmap.start_year, 1, 1)).days / (365.25 * roadmap.years)
+                end_position_ratio = (lifeline.to_date - date(roadmap.start_year, 1, 1)).days / (365.25 * roadmap.years)
+
+                lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years + start_gap
+                lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years - end_gap
 
                 lifeline.tubemap_line(root=root,
                                       layer="Default",
-                                      #begin_x=xy_timeline_begin[0],
                                       begin_x=lifeline_begin_x,
-                                      begin_y=xy_timeline_begin[1] + index * (swimlane_height_px // 4), # todo remove magic
-                                      #end_x=xy_timeline_end[0],
+                                      begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4), # todo remove magic
                                       end_x=lifeline_end_x,
-                                      end_y=xy_timeline_end[1] + index * (swimlane_height_px // 4), # todo remove magic
+                                      end_y=xy_timeline_end[1] + ix_lf * (swimlane_height_px // 4), # todo remove magic
                                       width=2,
                                       height=2,
                                       style={
-                                            'strokeColor': '#B0E0E6',
+                                            'strokeColor': lifeline.type.metadata_drawio.strokeColor,
                                             'strokeWidth': '5',
                                             'endArrow': 'oval',
                                             },
@@ -230,6 +230,7 @@ class DrawIORoadmapRenderer:
                                         'strokeColor': '#000000;'
                                     })
         swimlane_header.render(root)
+
         for index, year in enumerate(years):
             xy_cursor = (year_lenght_px * (index + 1), 0)
             year_label = Rectangle(year,
@@ -242,8 +243,8 @@ class DrawIORoadmapRenderer:
                                        'strokeColor': '#000000;'
                                    })
             year_label.render(root)
+
         if config.Global.show_quarters:
-            # Copilot auto generated this code
             for index, year in enumerate(years):
                 xy_cursor = (year_lenght_px * (index + 1), swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q1",

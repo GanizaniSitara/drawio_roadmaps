@@ -26,9 +26,7 @@ class Event:
         return f"{market} {self.description} - {self.date.strftime('%Y-%m-%d')}"
 
     def __str__(self):
-        # ToDo: we should remove the marker and put output specific implemenstation in the renderers
-        # Todo: consider further abstraction to roadmap element with ABCs?
-        return f"{self.event_type.marker} {self.description}"
+        return f"{self.description}"
 
     def __repr__(self):
         return f"{self.event_type.marker} {self.description} [{self.date.strftime('%Y-%m-%d')} " \

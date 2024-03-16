@@ -13,6 +13,7 @@ from drawio_roadmaps.classes.event import Event
 from drawio_roadmaps.enums.event_type import EventType
 
 from drawio_roadmaps.classes.lifeline import LifeLine
+from drawio_roadmaps.enums.lifeline_type import LifeLineType
 
 
 class RoadmapLoader:
@@ -52,6 +53,8 @@ class YamlRoadmapLoader(RoadmapLoader):
                         lifeline.set_from(lifeline_data['from'])
                     if 'to' in lifeline_data:
                         lifeline.set_to(lifeline_data['to'])
+                    if 'status' in lifeline_data:
+                        lifeline.set_lifeline_type(LifeLineType[lifeline_data['status']])
                     swimlane.add_lifeline(lifeline)
 
                 roadmap.add_swimlane(swimlane)

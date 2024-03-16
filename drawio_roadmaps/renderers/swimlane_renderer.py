@@ -72,7 +72,7 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
                 ending = '>>>'
 
             # Construct the lifeline string with appropriate padding and periods
-            lifeline_str = (f"| {lifeline.name}")
+            lifeline_str = (f"| {lifeline.name[:segment_width - 3]}") # truncate name for Ascii output
             lifeline_str += ' ' * (segment_width - len(lifeline_str) + 1) + '|'
 
             leading_space = ' ' * start_offset
