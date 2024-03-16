@@ -1,4 +1,4 @@
-from drawio_roadmaps.drawio.drawio_shapes import Line
+from drawio_roadmaps.drawio.drawio_shapes import Line, Label
 from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
 
 
@@ -28,6 +28,16 @@ class DrawIOLifeLineRenderer(LifeLineRenderer):
                     style=style,
                     value=kwargs.get('value', ''))
         line.render(root)
+
+    def render_label(self, root, x, y, width, height, value, **kwargs):
+        label = Label(
+                     value,
+                     x=x,
+                     y=y,
+                     width=width,
+                     height=height,
+                     **kwargs)
+        label.render(root)
         return
 
 

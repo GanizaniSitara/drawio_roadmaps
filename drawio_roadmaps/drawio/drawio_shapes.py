@@ -186,20 +186,34 @@ def create_rectangle(parent, x, y, width, height, **kwargs):
 
 
 class Label:
+
     def __init__(self, name, x, y, width, height, **kwargs):
-        self.kwargs = kwargs
-        self.kwargs['value'] = name
-        self.kwargs['style'] = ('text;html=1;strokeColor=none;fillColor=none;align=center;fontFamily=Verdana;' +
-                                'verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;' +
-                                'labelBackgroundColor=#ffffff;')
-        self.x1 = x
-        self.y1 = y
+        self.kwargs = {'value': name}
+        self.style = {
+            'html': '1',
+            'strokeColor': 'none',
+            'fillColor': 'none',
+            'align': 'center',
+            'fontFamily': 'Verdana',
+            'verticalAlign': 'middle',
+            #'whiteSpace': 'wrap',
+            'rounded': '0',
+            'fontSize': '14',
+            'labelBackgroundColor': '#ffffff'
+        }
+
+        self.style.update(kwargs.get('style', {}))
+        self.kwargs['style'] = 'text;' + ';'.join(f'{key}={value}' for key, value in self.style.items())
+
+        self.x = x
+        self.y = y
         self.width = width
         self.height = height
 
+
     def render(self, root):
         layer = layer_id_2(root, 'Default')
-        container = create_rectangle(layer, self.x1, self.y1, self.width, self.height, **self.kwargs)
+        container = create_rectangle(layer, self.x, self.y, self.width, self.height, **self.kwargs)
         root.append(container)
 
 

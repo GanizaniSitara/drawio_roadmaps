@@ -32,12 +32,14 @@ class LifeLine:
     def set_lifeline_type(self, type):
         self.type = type
 
-
-
     def set_renderer(self, renderer):
         self.renderer = renderer
 
-    def tubemap_line(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style, **kwargs):
+    def render(self, root):
+        result = renderer_manager.get_renderer('lifeline').render(self)
+        return result
+
+    def tubemap_lifeline(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style, **kwargs):
         renderer = renderer_manager.get_renderer('lifeline')
         renderer.render_lifeline(root=root,
                                  layer=layer,
@@ -49,4 +51,15 @@ class LifeLine:
                                  height=height,
                                  style=style,
                                  value=kwargs.get('value', ''))
+        return
+
+    def tubemap_lifeline_label(self, root, x, y, width, height, value, **kwargs):
+        renderer = renderer_manager.get_renderer('lifeline')
+        renderer.render_label(root=root,
+                              x=x,
+                              y=y,
+                              width=width,
+                              height=height,
+                              value=value,
+                              style=kwargs.get('style', ''))
         return

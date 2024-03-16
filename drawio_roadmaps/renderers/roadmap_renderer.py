@@ -193,20 +193,33 @@ class DrawIORoadmapRenderer:
                 lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years + start_gap
                 lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years - end_gap
 
-                lifeline.tubemap_line(root=root,
-                                      layer="Default",
-                                      begin_x=lifeline_begin_x,
-                                      begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4), # todo remove magic
-                                      end_x=lifeline_end_x,
-                                      end_y=xy_timeline_end[1] + ix_lf * (swimlane_height_px // 4), # todo remove magic
-                                      width=2,
-                                      height=2,
-                                      style={
+                # ToDo: why are we passing so much whne it's on the object?
+                # it should be just lifeline.render() with positional and layer data?
+                lifeline.tubemap_lifeline(root=root,
+                                          layer="Default",
+                                          begin_x=lifeline_begin_x,
+                                          begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                          end_x=lifeline_end_x,
+                                          end_y=xy_timeline_end[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                          width=2,
+                                          height=2,
+                                          style={
                                             'strokeColor': lifeline.type.metadata_drawio.strokeColor,
                                             'strokeWidth': '5',
                                             'endArrow': 'oval',
                                             },
-                                      value=lifeline.name)
+                                          value=lifeline.name)
+
+                lifeline.tubemap_lifeline_label(root=root,
+                                                x=0 + typographic_line_gap,
+                                                y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4) - 10,
+                                                width=year_lenght_px - typographic_line_gap,
+                                                height=20,
+                                                value=lifeline.name,
+                                                style = {
+                                                    'fontSize': '12',
+                                                    'align': 'left',
+                                                })
 
             print(f"Swimlane {swimlane.name} height: {swimlane.height()}")
             actual_height = swimlane.height()
