@@ -75,5 +75,11 @@ class Swimlane:
     def add_lifeline(self, lifeline):
         self.lifelines.append(lifeline)
 
+    def get_lifeline_y_coordinate_index(self, lifeline_name):
+        for index, lifeline in enumerate(self.lifelines):
+            if lifeline.name == lifeline_name:
+                return index
+        return None
+
 
 

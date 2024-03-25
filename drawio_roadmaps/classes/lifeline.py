@@ -15,6 +15,7 @@ class LifeLine:
         self.to_date = to_date
         self.type = lifeline_type
         self.render_meta = None
+        self.merge_to = None
 
     def __str__(self, indent=0):
         lifeline_str = ' ' * indent + f"LifeLine: {self.name} [{self.type.metadata_drawio.color}]\n"
@@ -31,6 +32,9 @@ class LifeLine:
 
     def set_lifeline_type(self, type):
         self.type = type
+
+    def set_merge_to(self, merge_to):
+        self.merge_to = merge_to
 
     def set_renderer(self, renderer):
         self.renderer = renderer
@@ -52,6 +56,22 @@ class LifeLine:
                                  style=style,
                                  value=kwargs.get('value', ''))
         return
+
+    def tubemap_lifeline_angled(self, root, layer, begin_x, begin_y, end_x, end_y, width, height, style, **kwargs):
+        # we dont render as the order matters and the merging lifelines need to be added the last
+        renderer = renderer_manager.get_renderer('lifeline_angled')
+        line = renderer.get_angled_lifeline(root=root,
+                                 layer=layer,
+                                 begin_x=begin_x,
+                                 begin_y=begin_y,
+                                 end_x=end_x,
+                                 end_y=end_y,
+                                 width=width,
+                                 height=height,
+                                 style=style,
+                                 value=kwargs.get('value', ''))
+        return line
+
 
     def tubemap_lifeline_label(self, root, x, y, width, height, value, **kwargs):
         renderer = renderer_manager.get_renderer('lifeline')

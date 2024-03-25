@@ -24,8 +24,9 @@ swimlanes:
         from: 2025-01-01
         to: 2025-12-31
         status: CEASE
+        merge_to: Wix
       - name: Wix
-        to: 2025-06-30
+        to: 2026-06-30
         status: DIVEST
       - name: Callstack
         from: 2025-03-31

@@ -90,7 +90,7 @@ class DrawIORoadmapRenderer:
         year_lenght_px = config.DrawIO.year_length_px
         swimlane_height_px = config.DrawIO.swimlane_height_px
 
-        mxGraphModel = self.get_diagram_root()
+        mxGraphModel = drawio_utils.get_diagram_root()
         root = mxGraphModel.find("root")
         self.append_layers(root)
 
@@ -112,18 +112,26 @@ class DrawIORoadmapRenderer:
             # and then use that to calculate the y position of the next swimlane
 
 
-
             lane = Rectangle('',
                              xy_cursor[0] + year_lenght_px,
                              xy_cursor[1],
                              year_lenght_px * (len(years)),
                              swimlane.height(),
                              style={
-                                    'strokeColor': '#000000;'
+                                    'strokeColor': '#000000;',
+                                    'fontStyle': '1',
                                     })
             lane.render(root)
 
-            style = {'verticalAlign': 'top', 'spacingTop': '36'} if swimlane.lifelines else {}
+            typographic_line_gap = 20  # todo remove magic
+
+            style = {'fontStyle': '1'}
+            # change the style of the swimlane titles (for all) if we have any lifelines in the roadmap
+            if any(swimlane.lifelines for swimlane in roadmap.swimlanes):
+                style.update({'verticalAlign': 'top',
+                              'spacingTop': '36',
+                              'spacingLeft': typographic_line_gap,
+                              'align': 'left'})
 
             swimlane_label = Rectangle(swimlane.name,
                                        xy_cursor[0],
@@ -133,7 +141,7 @@ class DrawIORoadmapRenderer:
                                        style=style)
             swimlane_label.render(root)
 
-            typographic_line_gap = 20  # todo remove magic
+
 
             xy_timeline_begin = (xy_cursor[0] + year_lenght_px + typographic_line_gap
                                  , xy_cursor[1] + int(swimlane_height_px / 2))
@@ -173,11 +181,13 @@ class DrawIORoadmapRenderer:
                                       x=x,
                                       y=y,
                                       style={
-                                          'fillColor': event.event_type.render_meta.fillColor
+                                          'fillColor': event.event_type.render_meta.fillColor,
                                       })
 
             xy_timeline_begin = (xy_timeline_begin[0] - typographic_line_gap, xy_timeline_begin[1] + swimlane_height_px // 2 + 10) # todo remove magic
             xy_timeline_end = (xy_timeline_end[0] - typographic_line_gap, xy_timeline_end[1] + swimlane_height_px // 2 + 10)
+
+            delayed_render_lifelines = []
 
             for ix_lf, lifeline in enumerate(swimlane.lifelines):
 
@@ -193,33 +203,62 @@ class DrawIORoadmapRenderer:
                 lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years + start_gap
                 lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years - end_gap
 
-                # ToDo: why are we passing so much whne it's on the object?
+                # ToDo: why are we passing so much when it's on the object?
                 # it should be just lifeline.render() with positional and layer data?
-                lifeline.tubemap_lifeline(root=root,
-                                          layer="Default",
-                                          begin_x=lifeline_begin_x,
-                                          begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
-                                          end_x=lifeline_end_x,
-                                          end_y=xy_timeline_end[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
-                                          width=2,
-                                          height=2,
-                                          style={
-                                            'strokeColor': lifeline.type.metadata_drawio.strokeColor,
-                                            'strokeWidth': '5',
-                                            'endArrow': 'oval',
-                                            },
-                                          value=lifeline.name)
+
+                if not lifeline.merge_to:
+
+                    lifeline.tubemap_lifeline(root=root,
+                                              layer="Default",
+                                              begin_x=lifeline_begin_x,
+                                              begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                              end_x=lifeline_end_x,
+                                              end_y=xy_timeline_end[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                              width=2,
+                                              height=2,
+                                              style={
+                                                'strokeColor': lifeline.type.metadata_drawio.strokeColor,
+                                                'strokeWidth': '5',
+                                                'endArrow': 'oval',
+                                                },
+                                              value=lifeline.name)
+
+                else:
+
+                    merge_to_y = swimlane.get_lifeline_y_coordinate_index(lifeline.merge_to)
+                    if merge_to_y is not None:
+                        lf = lifeline.tubemap_lifeline_angled(root=root,
+                                                  layer="Default",
+                                                  begin_x=lifeline_begin_x,
+                                                  begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                                  end_x=lifeline_end_x,
+                                                  end_y= xy_timeline_end[1] + merge_to_y * (swimlane_height_px // 4),  # todo remove magic
+                                                  width=2,
+                                                  height=2,
+                                                  style={
+                                                      'strokeColor': lifeline.type.metadata_drawio.strokeColor,
+                                                      'strokeWidth': '5',
+                                                      'endArrow': 'oval',
+                                                  },
+                                                  value=lifeline.name)
+                        delayed_render_lifelines.append(lf)
+
 
                 lifeline.tubemap_lifeline_label(root=root,
                                                 x=0 + typographic_line_gap,
                                                 y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4) - 10,
                                                 width=year_lenght_px - typographic_line_gap,
                                                 height=20,
-                                                value=lifeline.name,
+                                                value=lifeline.name[:36], # TODO This is truncation magic should be refactored
                                                 style = {
                                                     'fontSize': '12',
                                                     'align': 'left',
+                                                    'fontColor': lifeline.type.metadata_drawio.strokeColor,
+                                                    'fontStyle': '1',
                                                 })
+
+                for lf in delayed_render_lifelines:
+                    lf.render(root)
 
             print(f"Swimlane {swimlane.name} height: {swimlane.height()}")
             actual_height = swimlane.height()
@@ -240,7 +279,8 @@ class DrawIORoadmapRenderer:
         swimlane_header = Rectangle(roadmap.swimlane_column_title, 0, 0, year_lenght_px, swimlane_height,
                                     style={
                                         'fillColor': '#ffffff',
-                                        'strokeColor': '#000000;'
+                                        'strokeColor': '#000000;',
+                                        'fontStyle': '1',
                                     })
         swimlane_header.render(root)
 
@@ -250,14 +290,23 @@ class DrawIORoadmapRenderer:
                                    x=xy_cursor[0],
                                    y=xy_cursor[1],
                                    width=year_lenght_px,
-                                   height=swimlane_height,
+                                   height=swimlane_height * 0.75 if config.Global.show_quarters else swimlane_height,
                                    style={
                                        'fillColor': '#ffffff',
-                                       'strokeColor': '#000000;'
+                                       'strokeColor': '#000000;',
+                                       'fontStyle': '1',
                                    })
             year_label.render(root)
 
+
+
         if config.Global.show_quarters:
+            style = {
+                     'fillColor': '#ffffff',
+                     'strokeColor': '#000000;',
+                     'fontSize': '12',
+                    }
+            # Copilot on fire
             for index, year in enumerate(years):
                 xy_cursor = (year_lenght_px * (index + 1), swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q1",
@@ -265,10 +314,7 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style={
-                                              'fillColor': '#ffffff',
-                                              'strokeColor': '#000000;'
-                                          })
+                                          style=style)
                 quarter_label.render(root)
                 xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 4, swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q2",
@@ -276,10 +322,7 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style={
-                                              'fillColor': '#ffffff',
-                                              'strokeColor': '#000000;'
-                                          })
+                                          style=style)
                 quarter_label.render(root)
                 xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px / 2, swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q3",
@@ -287,10 +330,7 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style={
-                                              'fillColor': '#ffffff',
-                                              'strokeColor': '#000000;'
-                                          })
+                                          style=style)
                 quarter_label.render(root)
                 xy_cursor = (year_lenght_px * (index + 1) + year_lenght_px * 3 / 4, swimlane_height * 0.75)
                 quarter_label = Rectangle(f"Q4",
@@ -298,62 +338,19 @@ class DrawIORoadmapRenderer:
                                           y=xy_cursor[1],
                                           width=year_lenght_px / 4,
                                           height=swimlane_height * 0.25,
-                                          style={
-                                              'fillColor': '#ffffff',
-                                              'strokeColor': '#000000;'
-                                          })
+                                          style=style)
                 quarter_label.render(root)
 
-    @staticmethod
-    def create_layer(self, name):
-        mxcell = etree.Element('mxCell')
-        mxcell.set('id', id_generator_2())
-        mxcell.set('value', name)
-        mxcell.set('style', 'locked=0')
-        mxcell.set('parent', '0')
-        return mxcell
+
 
     def append_layers(self, root):
         # back to front order, lowest layer first
-        layers = {'default': self.create_layer(self, name='Default')}
+        layers = {'default': drawio_utils.create_layer(name='Default')}
         for layer in layers.values():
             root.append(layer)
         return root
 
-    @staticmethod
-    def get_diagram_root():
-        mxGraphModel = etree.Element('mxGraphModel')
-        mxGraphModel.set('dx', '981')
-        mxGraphModel.set('dy', '650')
-        mxGraphModel.set('grid', '1')
-        mxGraphModel.set('gridSize', '10')
-        mxGraphModel.set('guides', '1')
-        mxGraphModel.set('tooltips', '1')
-        mxGraphModel.set('connect', '1')
-        mxGraphModel.set('arrows', '1')
-        mxGraphModel.set('fold', '1')
-        mxGraphModel.set('page', '1')
-        mxGraphModel.set('pageScale', '1')
-        mxGraphModel.set('pageWidth', '816')
-        mxGraphModel.set('pageHeight', '1056')
-        mxGraphModel.set('math', '0')
-        mxGraphModel.set('shadow', '0')
 
-        root = etree.Element('root')
-        mxGraphModel.append(root)
-        # to cell is always there all the other layers inherit from it
-        mxcell = etree.Element('mxCell')
-        mxcell.set('id', '0')
-        root.append(mxcell)
-        # background layer is always there, we don't draw on it
-        background = etree.Element('mxCell')
-        background.set('id', '1')
-        background.set('style', 'locked=1')
-        background.set('parent', '0')
-        background.set('visible', '1')
-        background.set('value', 'Background')
-        root.append(background)
-        return mxGraphModel
 
 
 class PowerPointRoadmapRenderer:

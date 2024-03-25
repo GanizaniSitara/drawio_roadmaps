@@ -55,7 +55,11 @@ class YamlRoadmapLoader(RoadmapLoader):
                         lifeline.set_to(lifeline_data['to'])
                     if 'status' in lifeline_data:
                         lifeline.set_lifeline_type(LifeLineType[lifeline_data['status']])
+                    if 'merge_to' in lifeline_data:
+                        lifeline.set_merge_to(lifeline_data['merge_to'])
+
                     swimlane.add_lifeline(lifeline)
+
 
                 roadmap.add_swimlane(swimlane)
         except Exception as e:
