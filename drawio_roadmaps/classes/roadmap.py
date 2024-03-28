@@ -5,19 +5,35 @@ from drawio_roadmaps.renderer_manager import RendererManager
 renderer_manager = RendererManager()
 
 class Roadmap:
-    def __init__(self, name, start_year=2024, years=4, last_year_runout=False):
+    def __init__(self, name, start_year=2024, end_year=2027, last_year_runout=False):
         self.name = name
 
-
+        #todo refactor to use start_year and first_year consistently
         self.swimlane_column_title = "SWIMLANES"
 
         self.start_year = start_year
-        self.end_year = start_year + years
-        self.years = years
+        self.years = (end_year - start_year + 1)
+        self.end_year = start_year + self.years
 
         self.swimlanes = []  # Applications under this roadmap
         self.last_year_runout = last_year_runout
 
+
+    # @property
+    # def first_year(self):
+    #     return self.start_year
+    #
+    # @first_year.setter
+    # def first_year(self, value):
+    #     self.start_year = value
+    #
+    # @property
+    # def last_year(self):
+    #     return self.end_year
+    #
+    # @last_year.setter
+    # def last_year(self, value):
+    #     self.end_year = value
 
     def __str__(self, indent=0):
         result = ' ' * indent + f"Roadmap: {self.name}\n"

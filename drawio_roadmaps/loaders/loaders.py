@@ -34,8 +34,13 @@ class YamlRoadmapLoader(RoadmapLoader):
             with open(file_path, 'r') as file:
                 data = yaml.safe_load(file)
 
-            roadmap = Roadmap(data['name'])
+            roadmap = Roadmap(
+                                data['name'],
+                                data['first_year'],
+                                data['last_year'],
+                              )
             roadmap.set_swimlane_column_title(data['swimlane_column_title'])
+
 
             for swimlane_data in data['swimlanes']:
                 swimlane = Swimlane(swimlane_data['name'])
@@ -77,9 +82,13 @@ class CsvRoadmapLoader(RoadmapLoader):
 
             roadmap_name = data[0]['roadmap_name']
             swimlane_column_title = data[0]['swimlane_column_title']
+            first_year = data[0]['first_year']
+            last_year = data[0]['last_year']
 
             roadmap = Roadmap(roadmap_name)
             roadmap.set_swimlane_column_title(swimlane_column_title)
+            roadmap.first_year = first_year
+            roadmap.last_year = last_year
 
             for row in data:
                 swimlane_name = row['swimlane_name']
