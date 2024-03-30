@@ -56,15 +56,15 @@ class AsciiSwimlaneRenderer(SwimlaneRenderer):
             # Check if from_date is provided; otherwise, start at the beginning of the roadmap
             character_per_days = 365 // segment_width
 
-            if lifeline.from_date is not None:
-                start_offset = lifeline.from_date - datetime.strptime(str(swimlane.roadmap.start_year), "%Y").date()
+            if lifeline.date_from is not None:
+                start_offset = lifeline.date_from - datetime.strptime(str(swimlane.roadmap.start_year), "%Y").date()
                 start_offset = start_offset.days // character_per_days
             else:
                 start_offset = 1
 
             # Check if to_date is provided; otherwise, end at the last year of the roadmap
-            if lifeline.to_date is not None:
-                end_offset = lifeline.to_date - datetime.strptime(str(swimlane.roadmap.start_year), "%Y").date()
+            if lifeline.date_to is not None:
+                end_offset = lifeline.date_to - datetime.strptime(str(swimlane.roadmap.start_year), "%Y").date()
                 end_offset = end_offset.days // character_per_days
                 ending = '†'
             else:

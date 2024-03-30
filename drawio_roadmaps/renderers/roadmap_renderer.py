@@ -150,6 +150,17 @@ class DrawIORoadmapRenderer:
             xy_cursor[0] + year_lenght_px + year_lenght_px * (len(years)) - typographic_line_gap
             , xy_cursor[1] + int(swimlane_height_px / 2))
 
+            # because we now have optional from_date and to_date on the swimlane class we need to work out the start
+            # and end of the timeline for each swimlane in x and y position and then pass that to the lifeline renderer
+            # we also need to check if we have a merge_to lifeline and if so, render that as an angled line
+
+            if swimlane.date_from:
+                xy_timeline_begin = (xy_timeline_begin[0] + year_lenght_px * (swimlane.date_from.year - roadmap.start_year), xy_timeline_begin[1])
+
+            if swimlane.date_to:
+                xy_timeline_end = (xy_timeline_end[0] - year_lenght_px * (roadmap.end_year - swimlane.date_to.year), xy_timeline_end[1])
+
+
             swimlane.tubemap_line(root=root,
                                   layer="Default",
                                   begin_x=xy_timeline_begin[0],
@@ -161,7 +172,8 @@ class DrawIORoadmapRenderer:
                                   style={
                                       'strokeColor': swimlane.type.metadata_drawio.strokeColor,
                                       'strokeWidth': '5',
-                                      'endArrow': 'doubleBlock'
+                                      'endArrow': 'doubleBlock',
+                                      'endSize': '1'
                                   },
                                   value='')
 
@@ -191,14 +203,23 @@ class DrawIORoadmapRenderer:
 
             for ix_lf, lifeline in enumerate(swimlane.lifelines):
 
-                start_gap = typographic_line_gap if lifeline.from_date is None else 0
-                lifeline.from_date = lifeline.from_date or date(roadmap.start_year, 1, 1)
+                start_gap = typographic_line_gap if (lifeline.date_from is None or
+                                                     lifeline.date_from == date(roadmap.start_year,1,1)) \
+                                                 else 0
+                lifeline.date_from = lifeline.date_from or date(roadmap.start_year, 1, 1)
 
-                end_gap = typographic_line_gap if lifeline.to_date is None else 0
-                lifeline.to_date = lifeline.to_date or date(roadmap.start_year + roadmap.years, 1, 1)
+                # Todo: change styling of the the terminating arrow as well
+                end_gap = typographic_line_gap if (lifeline.date_to is None or
+                                                   lifeline.date_to == date(roadmap.end_year-1, 12, 31)) \
+                                               else 0
+                if end_gap:
+                    end_arrow_style = {'endArrow': 'doubleBlock', 'endSize': '1'}
 
-                start_position_ratio = (lifeline.from_date - date(roadmap.start_year, 1, 1)).days / (365.25 * roadmap.years)
-                end_position_ratio = (lifeline.to_date - date(roadmap.start_year, 1, 1)).days / (365.25 * roadmap.years)
+                lifeline.date_to = lifeline.date_to or date(roadmap.start_year + roadmap.years, 1, 1)
+
+
+                start_position_ratio = (lifeline.date_from - date(roadmap.start_year, 1, 1)).days / (365.25 * roadmap.years)
+                end_position_ratio = (lifeline.date_to - date(roadmap.start_year, 1, 1)).days / (365.25 * roadmap.years)
 
                 lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years + start_gap
                 lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years - end_gap
@@ -220,7 +241,7 @@ class DrawIORoadmapRenderer:
                                                 'strokeColor': lifeline.type.metadata_drawio.strokeColor,
                                                 'strokeWidth': '5',
                                                 'endArrow': 'oval',
-                                                },
+                                                } | (end_arrow_style if end_gap else {}),
                                               value=lifeline.name)
 
                 else:
@@ -239,7 +260,7 @@ class DrawIORoadmapRenderer:
                                                       'strokeColor': lifeline.type.metadata_drawio.strokeColor,
                                                       'strokeWidth': '5',
                                                       'endArrow': 'oval',
-                                                  },
+                                                  } | (end_arrow_style if end_gap else {}),
                                                   value=lifeline.name)
                         delayed_render_lifelines.append(lf)
 

@@ -14,7 +14,9 @@ class Swimlane:
             name,
             roadmap=None,
             swimlane_type: SwimlaneType = SwimlaneType.PLATFORM,
-            lifelines=None
+            lifelines=None,
+            date_from: Optional[str] = None,
+            date_to: Optional[str] = None
     ):
         self.name = name
         self.renderer = renderer_manager.get_renderer("swimlane")
@@ -25,6 +27,25 @@ class Swimlane:
         self.roadmap_renderer = None
         if lifelines is None:
             self.lifelines = []
+
+        self._date_from = None
+        self._date_to = None
+
+    @property
+    def date_from(self):
+        return self._date_from
+
+    @date_from.setter
+    def date_from(self, value):
+        self._date_from = value
+
+    @property
+    def date_to(self):
+        return self._date_to
+
+    @date_to.setter
+    def date_to(self, value):
+        self._date_to = value
 
     def __str__(self, indent=0):
         swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{getattr(self.type.metadata_drawio, 'color', '')}]\n"

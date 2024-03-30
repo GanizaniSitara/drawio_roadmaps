@@ -10,7 +10,7 @@ swimlanes:
         date: 2026-11-30
         type: UNFUNDED
       - name: DAF Session Cache
-        date: 2024-09-30
+        date: 2015-09-30
         type: TARGET
       - name: DAF Native
         date: 2026-06-01
@@ -23,7 +23,7 @@ swimlanes:
         type: TARGET
     lifelines:
       - name: Expo
-        from: 2025-01-01
+        from: 2015-01-01
         to: 2025-12-31
         status: CEASE
         merge_to: Wix
@@ -35,7 +35,7 @@ swimlanes:
         status: INVEST
       - name: Infinte Red
         from: 2025-06-01
-        to: 2026-12-31
+        to: 2036-12-31
       - name: Software Mansion
         status: MAINTAIN
       - name: Truncation The Product With The Very Long Name

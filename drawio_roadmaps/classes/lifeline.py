@@ -11,8 +11,8 @@ class LifeLine:
         self.roadmap = roadmap
         self.swimlane = swimlane
         self.roadmap_renderer = None
-        self.from_date = from_date
-        self.to_date = to_date
+        self.date_from = from_date
+        self.date_to = to_date
         self.type = lifeline_type
         self.render_meta = None
         self.merge_to = None
@@ -25,10 +25,10 @@ class LifeLine:
         return lifeline_str
 
     def set_from(self, from_date):
-        self.from_date = from_date
+        self.date_from = from_date
 
     def set_to(self, to_date):
-        self.to_date = to_date
+        self.date_to = to_date
 
     def set_lifeline_type(self, type):
         self.type = type

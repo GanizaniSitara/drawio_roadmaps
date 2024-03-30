@@ -1,6 +1,6 @@
 import csv
 import sqlite3
-from datetime import datetime
+from datetime import datetime,date
 
 import yaml
 
@@ -27,6 +27,15 @@ class LoadError(Exception):
         self.original_exception = original_exception
         super().__init__(f"Error loading file {filename}: {original_exception}")
 
+def is_date_within_roadmap(roadmap, date):
+    if date is None:
+        return True
+
+    first_year = roadmap.start_year
+    last_year = roadmap.end_year
+
+    return first_year <= date.year <= last_year
+
 
 class YamlRoadmapLoader(RoadmapLoader):
     def load(self, file_path):
@@ -47,19 +56,40 @@ class YamlRoadmapLoader(RoadmapLoader):
                 if 'type' in swimlane_data:
                     swimlane.set_swimlane_type(SwimlaneType[swimlane_data['type']])
 
+                if 'date_from' in swimlane_data:
+                    swimlane.date_from = swimlane_data['date_from']
+
+                if 'date_to' in swimlane_data:
+                    swimlane.date_to = swimlane_data['date_to']
+
                 for event_data in swimlane_data.get('events', []):
+                    # Skip events that are not within the roadmap
+                    if not is_date_within_roadmap(roadmap, event_data['date']):
+                        continue
                     event_type = EventType[event_data['type']] if 'type' in event_data else None
                     event = Event(event_data['name'], event_data['date'], event_type)
                     swimlane.add_event(event)
 
                 for lifeline_data in swimlane_data.get('lifelines', []):
                     lifeline = LifeLine(lifeline_data['name'])
+
                     if 'from' in lifeline_data:
-                        lifeline.set_from(lifeline_data['from'])
+                        lifeline_from = lifeline_data['from']
+                        if not is_date_within_roadmap(roadmap, lifeline_from):
+                            lifeline.set_from(date(roadmap.start_year,1,1))
+                        else:
+                            lifeline.set_from(lifeline_from)
+
                     if 'to' in lifeline_data:
-                        lifeline.set_to(lifeline_data['to'])
+                        lifeline_to = lifeline_data['to']
+                        if not is_date_within_roadmap(roadmap, lifeline_to):
+                            lifeline.set_to(date(roadmap.end_year - 1,12,31))
+                        else:
+                            lifeline.set_to(lifeline_to)
+
                     if 'status' in lifeline_data:
                         lifeline.set_lifeline_type(LifeLineType[lifeline_data['status']])
+
                     if 'merge_to' in lifeline_data:
                         lifeline.set_merge_to(lifeline_data['merge_to'])
 
