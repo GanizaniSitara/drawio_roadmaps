@@ -1,11 +1,13 @@
 from drawio_roadmaps.renderer_manager import RendererManager
 from drawio_roadmaps.enums.lifeline_type import LifeLineType
+from datetime import date
 
 renderer_manager = RendererManager()
 
 class LifeLine:
     def __init__(self, name, roadmap=None, swimlane=None, from_date=None, to_date=None,
                  lifeline_type: LifeLineType = LifeLineType.NONE):
+        # todo: could do with typing here for roadmap and swimlane
         self.name = name
         self.renderer = renderer_manager.get_renderer("lifeline")
         self.roadmap = roadmap
@@ -13,6 +15,8 @@ class LifeLine:
         self.roadmap_renderer = None
         self.date_from = from_date
         self.date_to = to_date
+        self.truncated_from = False
+        self.truncated_to = False
         self.type = lifeline_type
         self.render_meta = None
         self.merge_to = None
@@ -25,10 +29,18 @@ class LifeLine:
         return lifeline_str
 
     def set_from(self, from_date):
-        self.date_from = from_date
+        if not self.roadmap.is_date_within_roadmap(from_date):
+            self.date_from = date(self.roadmap.start_year, 1, 1)
+            self.truncated_from = True
+        else:
+            self.date_from = from_date
 
     def set_to(self, to_date):
-        self.date_to = to_date
+        if not self.roadmap.is_date_within_roadmap(to_date):
+            self.date_to = date(self.roadmap.end_year - 1, 12, 31)
+            self.truncated_to = True
+        else:
+            self.date_to = to_date
 
     def set_lifeline_type(self, type):
         self.type = type

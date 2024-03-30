@@ -27,19 +27,11 @@ class LoadError(Exception):
         self.original_exception = original_exception
         super().__init__(f"Error loading file {filename}: {original_exception}")
 
-def is_date_within_roadmap(roadmap, date):
-    if date is None:
-        return True
-
-    first_year = roadmap.start_year
-    last_year = roadmap.end_year
-
-    return first_year <= date.year <= last_year
 
 
 class YamlRoadmapLoader(RoadmapLoader):
     def load(self, file_path):
-        try:
+
             with open(file_path, 'r') as file:
                 data = yaml.safe_load(file)
 
@@ -50,42 +42,41 @@ class YamlRoadmapLoader(RoadmapLoader):
                               )
             roadmap.set_swimlane_column_title(data['swimlane_column_title'])
 
-
             for swimlane_data in data['swimlanes']:
-                swimlane = Swimlane(swimlane_data['name'])
+                swimlane = Swimlane(swimlane_data['name'], roadmap=roadmap)
                 if 'type' in swimlane_data:
                     swimlane.set_swimlane_type(SwimlaneType[swimlane_data['type']])
 
                 if 'date_from' in swimlane_data:
                     swimlane.date_from = swimlane_data['date_from']
+                else:
+                    swimlane.truncated_from = True
 
                 if 'date_to' in swimlane_data:
                     swimlane.date_to = swimlane_data['date_to']
+                else:
+                    swimlane.truncated_to = True
 
                 for event_data in swimlane_data.get('events', []):
                     # Skip events that are not within the roadmap
-                    if not is_date_within_roadmap(roadmap, event_data['date']):
+                    if not roadmap.is_date_within_roadmap(event_data['date']):
                         continue
                     event_type = EventType[event_data['type']] if 'type' in event_data else None
                     event = Event(event_data['name'], event_data['date'], event_type)
                     swimlane.add_event(event)
 
                 for lifeline_data in swimlane_data.get('lifelines', []):
-                    lifeline = LifeLine(lifeline_data['name'])
+                    lifeline = LifeLine(lifeline_data['name'], roadmap=roadmap)
 
                     if 'from' in lifeline_data:
-                        lifeline_from = lifeline_data['from']
-                        if not is_date_within_roadmap(roadmap, lifeline_from):
-                            lifeline.set_from(date(roadmap.start_year,1,1))
-                        else:
-                            lifeline.set_from(lifeline_from)
+                        lifeline.set_from(lifeline_data['from'])
+                    else:
+                        lifeline.truncated_from = True
 
                     if 'to' in lifeline_data:
-                        lifeline_to = lifeline_data['to']
-                        if not is_date_within_roadmap(roadmap, lifeline_to):
-                            lifeline.set_to(date(roadmap.end_year - 1,12,31))
-                        else:
-                            lifeline.set_to(lifeline_to)
+                        lifeline.set_to(lifeline_data['to'])
+                    else:
+                        lifeline.truncated_to = True
 
                     if 'status' in lifeline_data:
                         lifeline.set_lifeline_type(LifeLineType[lifeline_data['status']])
@@ -97,10 +88,8 @@ class YamlRoadmapLoader(RoadmapLoader):
 
 
                 roadmap.add_swimlane(swimlane)
-        except Exception as e:
-            raise LoadError(file_path, e)
 
-        return roadmap
+            return roadmap
 
 
 class CsvRoadmapLoader(RoadmapLoader):

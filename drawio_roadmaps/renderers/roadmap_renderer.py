@@ -206,14 +206,17 @@ class DrawIORoadmapRenderer:
                 start_gap = typographic_line_gap if (lifeline.date_from is None or
                                                      lifeline.date_from == date(roadmap.start_year,1,1)) \
                                                  else 0
+
+                # Todo: move from renderer to lifeline logic, this is a rule that seems to say all lifelines
+                # have starting date, truncation should be set at the same time
                 lifeline.date_from = lifeline.date_from or date(roadmap.start_year, 1, 1)
 
-                # Todo: change styling of the the terminating arrow as well
                 end_gap = typographic_line_gap if (lifeline.date_to is None or
-                                                   lifeline.date_to == date(roadmap.end_year-1, 12, 31)) \
+                                                   lifeline.date_to == date(roadmap.end_year - 1, 12, 31)) \
                                                else 0
-                if end_gap:
-                    end_arrow_style = {'endArrow': 'doubleBlock', 'endSize': '1'}
+
+                end_continue_style = {'endArrow': 'doubleBlock', 'endSize': '1'}
+                start_explicit_style = {'startArrow': 'oval', 'startSize': '5'}
 
                 lifeline.date_to = lifeline.date_to or date(roadmap.start_year + roadmap.years, 1, 1)
 
@@ -241,7 +244,9 @@ class DrawIORoadmapRenderer:
                                                 'strokeColor': lifeline.type.metadata_drawio.strokeColor,
                                                 'strokeWidth': '5',
                                                 'endArrow': 'oval',
-                                                } | (end_arrow_style if end_gap else {}),
+                                                } | (end_continue_style if lifeline.truncated_to or lifeline.date_to is None else {}) |
+                                                    (start_explicit_style if (not lifeline.truncated_from
+                                                                           and lifeline.date_from) else {}),
                                               value=lifeline.name)
 
                 else:
@@ -260,7 +265,8 @@ class DrawIORoadmapRenderer:
                                                       'strokeColor': lifeline.type.metadata_drawio.strokeColor,
                                                       'strokeWidth': '5',
                                                       'endArrow': 'oval',
-                                                  } | (end_arrow_style if end_gap else {}),
+                                                  } | (end_continue_style if lifeline.truncated_to or lifeline.date_to is None else {}) |
+                                                      (start_explicit_style if not lifeline.truncated_from else {}),
                                                   value=lifeline.name)
                         delayed_render_lifelines.append(lf)
 

@@ -30,6 +30,8 @@ class Swimlane:
 
         self._date_from = None
         self._date_to = None
+        self.truncated_from = False
+        self.truncated_to = False
 
     @property
     def date_from(self):
@@ -37,7 +39,11 @@ class Swimlane:
 
     @date_from.setter
     def date_from(self, value):
-        self._date_from = value
+        if not self.roadmap.is_date_within_roadmap(value):
+            self._date_from = date(self.roadmap.start_year, 1, 1)
+            self.truncated_from = True
+        else:
+            self._date_from = value
 
     @property
     def date_to(self):
@@ -45,7 +51,11 @@ class Swimlane:
 
     @date_to.setter
     def date_to(self, value):
-        self._date_to = value
+        if not self.roadmap.is_date_within_roadmap(value):
+            self._date_to = date(self.roadmap.end_year, 12, 31)
+            self.truncated_to = True
+        else:
+            self._date_to = value
 
     def __str__(self, indent=0):
         swimlane_str = ' ' * indent + f"Swimlane: {self.name} [{getattr(self.type.metadata_drawio, 'color', '')}]\n"

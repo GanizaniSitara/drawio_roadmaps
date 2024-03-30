@@ -52,7 +52,7 @@ def get_diagram_root():
     return mxGraphModel
 
 
-def create_layer(name, locked=1):
+def create_layer(name, locked=0):
     mxcell = etree.Element('mxCell')
     mxcell.set('id', id_generator())
     mxcell.set('value', name)

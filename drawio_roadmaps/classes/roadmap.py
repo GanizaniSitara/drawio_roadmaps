@@ -73,6 +73,16 @@ class Roadmap:
         self.renderer = renderer_manager.get_renderer("roadmap")
         return self.renderer.render(self)
 
+    def is_date_within_roadmap(self, date):
+        if date is None:
+            return True
+
+        return self.start_year <= date.year <= self.end_year
+
+
+
+
+
 
 
 
