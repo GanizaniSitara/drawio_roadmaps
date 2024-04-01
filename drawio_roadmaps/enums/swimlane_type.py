@@ -1,5 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
+from drawio_roadmaps.config import ColorScheme
 
 @dataclass
 class SwimlaneMetadataDrawio:

@@ -1,7 +1,10 @@
 
 from enum import Enum
 
-from drawio_roadmaps.renderers.roadmap_renderer import AsciiRoadmapRenderer, DrawIORoadmapRenderer, PowerPointRoadmapRenderer, StringRoadmapRenderer
+from drawio_roadmaps.renderers.roadmap_renderer_text import StringRoadmapRenderer
+from drawio_roadmaps.renderers.roadmap_renderer_ascii import AsciiRoadmapRenderer
+from drawio_roadmaps.renderers.roadmap_renderer_powerpoint import PowerPointRoadmapRenderer
+from drawio_roadmaps.renderers.roadmap_renderer_drawio import DrawIORoadmapRenderer
 from drawio_roadmaps.renderers.swimlane_renderer import AsciiSwimlaneRenderer, DrawIOSwimlaneRenderer, PowerPointSwimlaneRenderer, StringSwimlaneRenderer
 from drawio_roadmaps.renderers.event_renderer import AsciiEventRenderer, DrawIOEventRenderer, PowerPointEventRenderer, StringEventRenderer
 

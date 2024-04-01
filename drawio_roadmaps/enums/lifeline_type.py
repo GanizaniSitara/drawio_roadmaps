@@ -1,18 +1,20 @@
 from enum import Enum
-from dataclasses import dataclass
 
-@dataclass
+from drawio_roadmaps.config_colors import ColorScheme
+from drawio_roadmaps.config import RoadmapConfig
+
+color_scheme = ColorScheme(RoadmapConfig.DrawIO.color_scheme.scheme_class)
+
 class LifeLineMetadataDrawio:
-    strokeColor: str
-
+    def __init__(self, strokeColor):
+        self.strokeColor = strokeColor
 
 class LifeLineType(Enum):
     NONE = ("NONE", LifeLineMetadataDrawio(strokeColor="#858585"))
-    INVEST = ("INVEST", LifeLineMetadataDrawio(strokeColor="#50C878"))
+    INVEST = ("INVEST", LifeLineMetadataDrawio(strokeColor=color_scheme.RAG.Green))
     MAINTAIN = ("MAINTAIN", LifeLineMetadataDrawio(strokeColor="#A9C5E6"))
-    DIVEST = ("DIVEST", LifeLineMetadataDrawio(strokeColor="#FFD700"))
-    CEASE = ("CEASE", LifeLineMetadataDrawio(strokeColor="#FF6961"))
-
+    DIVEST = ("DIVEST", LifeLineMetadataDrawio(strokeColor=color_scheme.RAG.Amber))
+    CEASE = ("CEASE", LifeLineMetadataDrawio(strokeColor=color_scheme.RAG.Red))
 
 
 
