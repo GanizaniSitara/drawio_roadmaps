@@ -2,7 +2,7 @@ import drawio_roadmaps.drawio.drawio_serialization as drawio_tools
 import lxml.etree as etree
 from xml.etree import ElementTree
 
-# x = etree.parse('examples/inspect.drawio')
+# x = etree.parse('examples/connected_stations.drawio')
 x = etree.parse('examples/inspect.drawio')
 # print(etree.tostring(x, pretty_print=True))
 

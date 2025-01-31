@@ -18,11 +18,15 @@ class DefaultColorScheme():
 
     class RAG:
         Red = "#FF6961"
-        Amber = "#FFD700"
+        Amber = "#FFBF00"
         Green = "#50C878"
 
     class Colors:
-        pass
+        Grey = "#858585"
+        Blue = "#A9C5E6"
+        Purple = "#B19CD9"
+        Yellow = "#FFD700"
+
 
 
 class LondonUndergroundColorScheme():
@@ -40,7 +44,7 @@ class LondonUndergroundColorScheme():
         Magenta = "#9B0056"  # Magenta, Metropolitan
         Black = "#000000"  # Black, Northern
         Blue_Dark = "#003688"  # Dark Blue, Piccadilly
-        Blue_Light = "#0098D4"  # Light Blue, Victoria
+        Blue = "#0098D4"  # Light Blue, Victoria
         Turquoise = "#95CDBA"  # Turquoise, Waterloo and City
         Turquoise_2 = "#00A4A7"  # Turquoise, DLR
         Green_Lime = "#84B817"  # Lime Green, Trams

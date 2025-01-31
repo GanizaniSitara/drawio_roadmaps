@@ -10,13 +10,11 @@ class LifeLineMetadataDrawio:
         self.strokeColor = strokeColor
 
 class LifeLineType(Enum):
-    NONE = ("NONE", LifeLineMetadataDrawio(strokeColor="#858585"))
+    NONE = ("NONE", LifeLineMetadataDrawio(strokeColor=color_scheme.Colors.Grey))
     INVEST = ("INVEST", LifeLineMetadataDrawio(strokeColor=color_scheme.RAG.Green))
-    MAINTAIN = ("MAINTAIN", LifeLineMetadataDrawio(strokeColor="#A9C5E6"))
+    MAINTAIN = ("MAINTAIN", LifeLineMetadataDrawio(strokeColor=color_scheme.Colors.Blue))
     DIVEST = ("DIVEST", LifeLineMetadataDrawio(strokeColor=color_scheme.RAG.Amber))
     CEASE = ("CEASE", LifeLineMetadataDrawio(strokeColor=color_scheme.RAG.Red))
-
-
 
     def __init__(self, description, metadata_drawio):
         self.description = description

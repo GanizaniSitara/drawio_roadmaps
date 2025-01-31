@@ -9,7 +9,7 @@ class RoadmapConfig:
     class DrawIO:
         year_length_px = 240
         swimlane_height_px = 100
-        color_scheme = ColorScheme(DefaultColorScheme)
+        color_scheme = ColorScheme(LondonUndergroundColorScheme)
         pass
 
     class Ascii:
