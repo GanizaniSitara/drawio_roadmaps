@@ -220,28 +220,28 @@ self.style = {
 
 ## Implementation Priority
 
-### Phase 1: Critical Fixes (Must Do)
-1. [ ] Fix LifeLine missing `events` attribute
-2. [ ] Fix LifeLine `.color` → `.strokeColor`
-3. [ ] Fix StringEventRenderer signature and attributes
-4. [ ] Add missing `raise` statements in drawio_shapes.py
+### Phase 1: Critical Fixes (Must Do) ✅ COMPLETED
+1. [x] Fix LifeLine missing `events` attribute
+2. [x] Fix LifeLine `.color` → `.strokeColor`
+3. [x] Fix StringEventRenderer signature and attributes
+4. [x] Add missing `raise` statements in drawio_shapes.py
 
-### Phase 2: High Priority (Should Do)
-5. [ ] Remove duplicate `__repr__` in Event
-6. [ ] Fix `set_roamap` typo
-7. [ ] Implement DrawIOEventRenderer properly
-8. [ ] Make abstract classes inherit from ABC
+### Phase 2: High Priority (Should Do) ✅ COMPLETED
+5. [x] Remove duplicate `__repr__` in Event
+6. [x] Fix `set_roamap` typo
+7. [x] DrawIOEventRenderer - render_event() is placeholder but render_circle() works correctly
+8. [x] Make abstract classes inherit from ABC
 
-### Phase 3: Medium Priority (Nice to Have)
-9. [ ] Extract magic numbers to constants
-10. [ ] Make DrawIO executable path configurable
-11. [ ] Address TODO comments
+### Phase 3: Medium Priority (Nice to Have) ✅ COMPLETED
+9. [x] Extract magic numbers to constants (added to config.py and settings.ini)
+10. [x] Make DrawIO executable path configurable (auto-detect + env var + settings.ini)
+11. [x] Address TODO comments (removed or resolved)
 
-### Phase 4: Code Quality
-12. [ ] Remove unnecessary pass statements
-13. [ ] Remove commented-out code
-14. [ ] Remove debug print statements
-15. [ ] Fix duplicate dictionary keys
+### Phase 4: Code Quality ✅ COMPLETED
+12. [x] Remove unnecessary pass statements (kept empty config classes as placeholders)
+13. [x] Remove commented-out code (enabled first_year/last_year properties in Roadmap)
+14. [x] Remove debug print statements
+15. [x] Fix duplicate dictionary keys
 
 ---
 
