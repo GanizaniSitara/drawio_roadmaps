@@ -22,15 +22,12 @@ class Event:
         self.links = []
 
     def __repr__(self):
-        market = self.event_type.marker if self.event_type else '='
-        return f"{market} {self.description} - {self.date.strftime('%Y-%m-%d')}"
+        marker = self.event_type.marker if self.event_type else '='
+        fill_color = self.event_type.render_meta.fillColor if self.event_type else ''
+        return f"{marker} {self.description} [{self.date.strftime('%Y-%m-%d')} {fill_color}]"
 
     def __str__(self):
         return f"{self.description}"
-
-    def __repr__(self):
-        return f"{self.event_type.marker} {self.description} [{self.date.strftime('%Y-%m-%d')} " \
-               f"{self.event_type.render_meta.fillColor}]"
 
     def to_string(self, indent=0):
         return ' ' * indent + repr(self)

@@ -1,6 +1,7 @@
 import csv
 import sqlite3
-from datetime import datetime,date
+from abc import ABC, abstractmethod
+from datetime import datetime, date
 
 import yaml
 
@@ -16,9 +17,10 @@ from drawio_roadmaps.classes.lifeline import LifeLine
 from drawio_roadmaps.enums.lifeline_type import LifeLineType
 
 
-class RoadmapLoader:
-    def load(self):
-        raise NotImplementedError("Subclasses must implement this method")
+class RoadmapLoader(ABC):
+    @abstractmethod
+    def load(self, source):
+        pass
 
 
 class LoadError(Exception):

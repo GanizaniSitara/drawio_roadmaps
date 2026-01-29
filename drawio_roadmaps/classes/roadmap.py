@@ -51,7 +51,7 @@ class Roadmap:
         else:
             # If a name is provided, create a new Swimlane instance
             swimlane = Swimlane(swimlane_or_name, self)
-        swimlane.set_roamap(self)
+        swimlane.set_roadmap(self)
         self.swimlanes.append(swimlane)
         return swimlane
 

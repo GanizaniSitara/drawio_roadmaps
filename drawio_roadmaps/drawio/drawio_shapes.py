@@ -118,7 +118,7 @@ def create_circle(parent, x, y, width, height, **kwargs):
         return mxcell
     except Exception as e:
         print(e)
-        RuntimeError('Error creating circle')
+        raise RuntimeError('Error creating circle')
 
 
 class Circle:
@@ -147,11 +147,6 @@ class Circle:
         self.style.update(kwargs.get('style'))
         self.style =  'ellipse;' + ';'.join(f'{key}={value}' for key, value in self.style.items()) + ';'
         self.kwargs = {}
-        self.kwargs['style'] = \
-            ('ellipse;whiteSpace=wrap;html=1;aspect=fixed;' +
-             'strokeWidth=4;spacingTop=55;fontSize=10;fontFamily=Helvetica;')
-        print(self.style)
-        print(self.kwargs['style'])
         self.kwargs['style'] = self.style
         #assert self.style == self.kwargs['style']
         self.kwargs['value'] = name
@@ -211,7 +206,7 @@ def create_line(parent, x1, y1, x2, y2, width, height, **kwargs):
         return mxcell
     except Exception as e:
         print(e)
-        RuntimeError('Error creating line')
+        raise RuntimeError('Error creating line')
 
 class Line:
     def __init__(self, root, layer, x1, y1, x2, y2, width, height, **kwargs):
@@ -280,7 +275,7 @@ def create_rectangle(parent, x, y, width, height, **kwargs):
         return mxcell
     except Exception as e:
         print(e)
-        RuntimeError('Error creating rectangle')
+        raise RuntimeError('Error creating rectangle')
 
 
 class Label:
@@ -321,7 +316,7 @@ class Rectangle:
         self.kwargs['value'] = name
         self.style = {
             'html': '1',
-            'strokeColor': 'none',
+            'strokeColor': '#000000',
             'fillColor': 'none',
             'align': 'center',
             'fontFamily': 'Helvetica',
@@ -329,7 +324,6 @@ class Rectangle:
             'whiteSpace': 'wrap',
             'rounded': '0',
             'fontSize': '14',
-            'strokeColor': '#000000',  # Note: 'strokeColor' appears twice, the last occurrence overrides the first
         }
 
         self.style.update(kwargs.get('style', {}))
