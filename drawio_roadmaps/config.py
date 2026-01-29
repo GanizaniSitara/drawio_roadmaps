@@ -92,6 +92,13 @@ class RoadmapConfig:
         _scheme_name = _config.get('drawio', 'color_scheme', fallback='london_underground')
         color_scheme = ColorScheme(COLOR_SCHEMES.get(_scheme_name, LondonUndergroundColorScheme))
 
+        # Layout constants (previously magic numbers)
+        typographic_line_gap = _config.getint('drawio', 'typographic_line_gap', fallback=20)
+        event_circle_size = _config.getint('drawio', 'event_circle_size', fallback=18)
+        lifeline_vertical_spacing = _config.getint('drawio', 'lifeline_vertical_spacing', fallback=25)
+        lifeline_label_height = _config.getint('drawio', 'lifeline_label_height', fallback=20)
+        lifeline_label_max_chars = _config.getint('drawio', 'lifeline_label_max_chars', fallback=36)
+
     class Ascii:
         segment_width = _config.getint('ascii', 'segment_width', fallback=36)
 
