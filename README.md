@@ -18,11 +18,11 @@ This project allows users to create and visualize roadmaps in various formats, i
 
 #### ASCII Output Example
 
-![ASCII Example](examples/drawio_roadmaps_ascii_output_example.png)
+![ASCII Example](https://ganizanisitara.github.io/drawio-roadmaps/drawio_roadmaps_ascii_output_example.png)
 
 #### Drawio Output Example
 
-![DRAWIO Example](examples/drawio_roadmaps_drawio_output_example.png)
+![DRAWIO Example](https://ganizanisitara.github.io/drawio-roadmaps/drawio_roadmaps_drawio_output_example.png)
 
 ## Features
 
