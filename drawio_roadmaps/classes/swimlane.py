@@ -96,7 +96,7 @@ class Swimlane:
     def set_swimlane_type(self, swimlane_type):
         self.type = swimlane_type
 
-    def set_roamap(self, roadmap):
+    def set_roadmap(self, roadmap):
         self.roadmap = roadmap
 
     def add_event(self, event):

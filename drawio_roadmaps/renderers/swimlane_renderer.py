@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from datetime import datetime
 
 from drawio_roadmaps.drawio.drawio_shapes import Line
@@ -6,9 +7,10 @@ from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
 from drawio_roadmaps.config import RoadmapConfig as config
 
 
-class SwimlaneRenderer:
+class SwimlaneRenderer(ABC):
+    @abstractmethod
     def render(self, swimlane):
-        raise NotImplementedError
+        pass
 
 
 class AsciiSwimlaneRenderer(SwimlaneRenderer):

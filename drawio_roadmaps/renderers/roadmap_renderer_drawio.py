@@ -13,12 +13,16 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
 
         year_lenght_px = config.DrawIO.year_length_px
         swimlane_height_px = config.DrawIO.swimlane_height_px
+        typographic_line_gap = config.DrawIO.typographic_line_gap
+        event_circle_size = config.DrawIO.event_circle_size
+        lifeline_spacing = config.DrawIO.lifeline_vertical_spacing
+        label_max_chars = config.DrawIO.lifeline_label_max_chars
+        label_height = config.DrawIO.lifeline_label_height
 
         mxGraphModel = drawio_utils.get_diagram_root()
         root = mxGraphModel.find("root")
         self.append_layers(root)
 
-        # Todo get years based on dates in roadmap - this is not implemented in Ascii
         years = [str(x) for x in range(roadmap.start_year, roadmap.start_year + roadmap.years)]
 
         # write out the header
@@ -46,8 +50,6 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                                     'fontStyle': '1',
                                     })
             lane.render(root)
-
-            typographic_line_gap = 20  # todo remove magic
 
             style = {'fontStyle': '1'}
             # change the style of the swimlane titles (for all) if we have any lifelines in the roadmap
@@ -107,11 +109,7 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                     year_lenght_px * (event.date.year - roadmap.start_year) + \
                     year_lenght_px / 12 * (event.date.month - 1)
 
-                # ToDo: hardcoded half circle height @ 9px (total size 18px)
-                # should go to config, although unlikely to change
-                # so 9 in the line below for half tube station height
-
-                y = xy_cursor[1] + int(swimlane_height_px / 2) - 9
+                y = xy_cursor[1] + int(swimlane_height_px / 2) - (event_circle_size // 2)
                 event.tubemap_station(root=root,
                                       layer="Default",
                                       x=x,
@@ -120,8 +118,8 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                                           'fillColor': event.event_type.render_meta.fillColor,
                                       })
 
-            xy_timeline_begin = (xy_timeline_begin[0] - typographic_line_gap, xy_timeline_begin[1] + swimlane_height_px // 2 + 10) # todo remove magic
-            xy_timeline_end = (xy_timeline_end[0] - typographic_line_gap, xy_timeline_end[1] + swimlane_height_px // 2 + 10)
+            xy_timeline_begin = (xy_timeline_begin[0] - typographic_line_gap, xy_timeline_begin[1] + lifeline_spacing)
+            xy_timeline_end = (xy_timeline_end[0] - typographic_line_gap, xy_timeline_end[1] + lifeline_spacing)
 
             delayed_render_lifelines = []
 
@@ -131,8 +129,6 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                                                      lifeline.date_from == date(roadmap.start_year,1,1)) \
                                                  else 0
 
-                # Todo: move from renderer to lifeline logic, this is a rule that seems to say all lifelines
-                # have starting date, truncation should be set at the same time
                 lifeline.date_from = lifeline.date_from or date(roadmap.start_year, 1, 1)
 
                 end_gap = typographic_line_gap if (lifeline.date_to is None or
@@ -151,17 +147,14 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                 lifeline_begin_x = xy_timeline_begin[0] + start_position_ratio * year_lenght_px * roadmap.years + start_gap
                 lifeline_end_x = xy_timeline_begin[0] + end_position_ratio * year_lenght_px * roadmap.years - end_gap
 
-                # ToDo: why are we passing so much when it's on the object?
-                # it should be just lifeline.render() with positional and layer data?
-
                 if not lifeline.merge_to:
 
                     lifeline.tubemap_lifeline(root=root,
                                               layer="Default",
                                               begin_x=lifeline_begin_x,
-                                              begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                              begin_y=xy_timeline_begin[1] + ix_lf * lifeline_spacing,
                                               end_x=lifeline_end_x,
-                                              end_y=xy_timeline_end[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                              end_y=xy_timeline_end[1] + ix_lf * lifeline_spacing
                                               width=2,
                                               height=2,
                                               style={
@@ -180,9 +173,9 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                         lf = lifeline.tubemap_lifeline_angled(root=root,
                                                 layer="Default",
                                                 begin_x=lifeline_begin_x,
-                                                begin_y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4),  # todo remove magic
+                                                begin_y=xy_timeline_begin[1] + ix_lf * lifeline_spacing,
                                                 end_x=lifeline_end_x,
-                                                end_y= xy_timeline_end[1] + merge_to_y * (swimlane_height_px // 4),  # todo remove magic
+                                                end_y=xy_timeline_end[1] + merge_to_y * lifeline_spacing
                                                 width=2,
                                                 height=2,
                                                 style={
@@ -197,11 +190,11 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
 
                 lifeline.tubemap_lifeline_label(root=root,
                                                 x=0 + typographic_line_gap,
-                                                y=xy_timeline_begin[1] + ix_lf * (swimlane_height_px // 4) - 10,
+                                                y=xy_timeline_begin[1] + ix_lf * lifeline_spacing - (label_height // 2),
                                                 width=year_lenght_px - typographic_line_gap,
-                                                height=20,
-                                                value=lifeline.name[:36], # TODO This is truncation magic should be refactored
-                                                style = {
+                                                height=label_height,
+                                                value=lifeline.name[:label_max_chars],
+                                                style={
                                                     'fontSize': '12',
                                                     'align': 'left',
                                                     'fontColor': lifeline.type.metadata_drawio.strokeColor,
@@ -211,9 +204,7 @@ class DrawIORoadmapRenderer(RoadmapRenderer):
                 for lf in delayed_render_lifelines:
                     lf.render(root)
 
-            print(f"Swimlane {swimlane.name} height: {swimlane.height()}")
-            actual_height = swimlane.height()
-            xy_cursor = (xy_cursor[0], xy_cursor[1] + actual_height)
+            xy_cursor = (xy_cursor[0], xy_cursor[1] + swimlane.height())
 
         # "Pretty Print" to console is not really required but we like to pretty print the XML just for comparison
         # and visual confirmation of what's being produced

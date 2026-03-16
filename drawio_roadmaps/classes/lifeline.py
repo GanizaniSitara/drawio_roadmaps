@@ -20,9 +20,10 @@ class LifeLine:
         self.type = lifeline_type
         self.render_meta = None
         self.merge_to = None
+        self.events = []
 
     def __str__(self, indent=0):
-        lifeline_str = ' ' * indent + f"LifeLine: {self.name} [{self.type.metadata_drawio.color}]\n"
+        lifeline_str = ' ' * indent + f"LifeLine: {self.name} [{self.type.metadata_drawio.strokeColor}]\n"
         for event in self.events:
             lifeline_str += event.__str__(indent + 4)
         lifeline_str += '\n'

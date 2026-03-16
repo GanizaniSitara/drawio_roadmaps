@@ -1,15 +1,19 @@
+from abc import ABC, abstractmethod
+
 from drawio_roadmaps.drawio.drawio_shapes import Line, Label, AngledLine
 from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
 
 
-class LifeLineRenderer:
-    def render(self, swimlane):
-        raise NotImplementedError
+class LifeLineRenderer(ABC):
+    @abstractmethod
+    def render(self, lifeline):
+        pass
 
 
-class LifeLineAngledRenderer:
-    def render(self, swimlane):
-        raise NotImplementedError
+class LifeLineAngledRenderer(ABC):
+    @abstractmethod
+    def render(self, lifeline):
+        pass
 
 class AsciiLifeLineRenderer(LifeLineRenderer):
     def render(self, lifeline):

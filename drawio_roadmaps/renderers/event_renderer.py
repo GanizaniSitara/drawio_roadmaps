@@ -1,11 +1,13 @@
+from abc import ABC, abstractmethod
 
 from drawio_roadmaps.drawio.drawio_shapes import Circle
 from drawio_roadmaps.drawio.drawio_utils import id_generator_2, layer_id_2
 
 
-class EventRenderer:
+class EventRenderer(ABC):
+    @abstractmethod
     def render_event(self, event, segment_width, years):
-        raise NotImplementedError
+        pass
 
 class AsciiEventRenderer(EventRenderer):
 
@@ -17,8 +19,9 @@ class AsciiEventRenderer(EventRenderer):
         return event_str
 
 class StringEventRenderer(EventRenderer):
-    def render_event(self, event):
-        event_str = f"Event: {event.description} {event.event_type} {event.metadata_drawio.fillColor}\n"
+    def render_event(self, event, segment_width=None, years=None):
+        fill_color = event.event_type.render_meta.fillColor if event.event_type else ''
+        event_str = f"Event: {event.description} {event.event_type} {fill_color}\n"
         return event_str
 
 class DrawIOEventRenderer(EventRenderer):
